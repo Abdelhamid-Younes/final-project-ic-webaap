@@ -7,7 +7,7 @@ metadata:
     env: prod
   namespace: "ic-group"
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: odoo
@@ -27,7 +27,7 @@ spec:
         - name: PASSWORD
           valueFrom:
             secretKeyRef:
-              name: odoo
+              name: odoo-secret
               key: PASSWORD 
         ports:
         - containerPort: 8069
@@ -42,10 +42,10 @@ spec:
       volumes:
       - name: odoo-inside-storage
         hostPath:
-          path: /data/odoo/config
+          path: /data_docker/config
       - name: odoo-lib-storage
         persistentVolumeClaim:
           claimName: odoo-pvc
       - name: odoo-addons-storage
         hostPath:
-          path: /data/odoo/addons
+          path: /data_docker/addons

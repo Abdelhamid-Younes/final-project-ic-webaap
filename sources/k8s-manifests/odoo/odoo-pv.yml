@@ -13,4 +13,4 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/data/odoo"
+    path: "/data_k8s/lib-odoo"
