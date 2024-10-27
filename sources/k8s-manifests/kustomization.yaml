@@ -1,7 +1,7 @@
 resources:
   - ic-group-namespace.yaml
   - ./postgres/postgres-clusterip.yaml
-  - ./ic-webapp/service-nodeport-ic.yaml
+  - ./ic-webapp/ic-webapp-nodeport.yaml
   - ./odoo/odoo-nodeport.yaml
   - ./pgadmin/pgadmin-nodeport.yaml
   - ./postgres/postgres-secret.yaml
@@ -11,4 +11,4 @@ resources:
   - ./postgres/postgres-deploy.yaml
   - ./pgadmin/pgadmin-deploy.yaml
   - ./odoo/odoo-deploy.yaml
-  - ./ic-webapp/ic-deploy.yaml
+  - ./ic-webapp/ic-webapp-deploy.yaml
