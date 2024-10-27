@@ -43,9 +43,6 @@ spec:
         - name: servers
           configMap:
             name: pgadmin-configmap
-#          items:
-#          - key: servers.json
-#            path: servers.json
         - name: pg-volume
           hostPath:
             path: /pg-data

@@ -1,13 +1,13 @@
 resources:
   - ic-group-namespace.yaml
-  - ./postgres/postgres-clusterip.yaml
-  - ./ic-webapp/ic-webapp-nodeport.yaml
-  - ./odoo/odoo-nodeport.yaml
-  - ./pgadmin/pgadmin-nodeport.yaml
   - ./postgres/postgres-secret.yaml
   - ./odoo/odoo-secret.yaml
   - ./pgadmin/pgadmin-secret.yaml
   - ./pgadmin/pgadmin-configmap.yaml
+  - ./postgres/postgres-clusterip.yaml
+  - ./ic-webapp/ic-webapp-nodeport.yaml
+  - ./odoo/odoo-nodeport.yaml
+  - ./pgadmin/pgadmin-nodeport.yaml
   - ./postgres/postgres-deploy.yaml
   - ./pgadmin/pgadmin-deploy.yaml
   - ./odoo/odoo-deploy.yaml
