@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgadmin-configmap
+  namespace: icgroup
+  labels:
+    env: prod
+data:
+  servers.json: | 
+    {
+        "Servers": {
+            "1": {
+                "Name": "Odoo_db",
+                "Group": "ic-group",
+                "Port": 5432,
+                "Username": "odoo",
+                "Host": "postgres-clusterip",
+                "SSLMode": "prefer",
+                "MaintenanceDB": "postgres"
+            }
+        }
+    }
