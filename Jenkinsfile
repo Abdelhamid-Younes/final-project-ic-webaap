@@ -8,10 +8,10 @@ pipeline {
 
         DOCKERHUB_USR = "${PARAM_DOCKERHUB_ID}"
         DOCKERHUB_PSW = credentials('dockerhub')
-        APP_EXPOSED_PORT = "${PARAM_PORT_EXPOSED}"            /*80 by default*/
+        APP_EXPOSED_PORT = "${PARAM_PORT_EXPOSED}"            /*8000 by default*/
 
 
-        INTERNAL_PORT = "${PARAM_INTERNAL_PORT}"              /*8080 by default*/
+        INTERNAL_PORT = "${PARAM_INTERNAL_PORT}"              /*5000 by default*/
         EXTERNAL_PORT = "${PARAM_PORT_EXPOSED}"
         CONTAINER_IMAGE = "${DOCKERHUB_USR}/${IMAGE_NAME}:${IMAGE_TAG}"
     }
@@ -61,7 +61,7 @@ pipeline {
         }
         stage('Login and Push Image on Docker Hub') {
             when{
-                expression {GIT_BRANCH == 'origin/master'}
+                expression {GIT_BRANCH == 'origin/main'}
             }
             agent any
             steps{
