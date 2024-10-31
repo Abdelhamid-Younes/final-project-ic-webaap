@@ -9,9 +9,9 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir flask
 
 # Copy the application 
-COPY /app/app.py .
-COPY /app/templates ./templates
-COPY /app/static ./static
+COPY sources/app/app.py .
+COPY sources/app/templates ./templates
+COPY sources/app/static ./static
 VOLUME /opt
 
 # Expose port 8080
