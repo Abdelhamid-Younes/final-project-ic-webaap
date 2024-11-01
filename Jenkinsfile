@@ -11,7 +11,7 @@ pipeline {
         APP_EXPOSED_PORT = "${PARAM_PORT_EXPOSED}"            /*8000 by default*/
 
 
-        INTERNAL_PORT = "${PARAM_INTERNAL_PORT}"              /*5000 by default*/
+        INTERNAL_PORT = "${PARAM_INTERNAL_PORT}"              /*8000 by default*/
         EXTERNAL_PORT = "${PARAM_PORT_EXPOSED}"
         CONTAINER_IMAGE = "${DOCKERHUB_USR}/${IMAGE_NAME}:${IMAGE_TAG}"
     }
@@ -44,8 +44,8 @@ pipeline {
             steps{
                 script {
                     sh '''
-                        curl http://172.17.0.1:$APP_EXPOSED_PORT | grep "IC GROUP"
-                        if [ $? -eq 0 ]; then echo "Acceptance test succeed"; fi
+                        curl http://172.17.0.1:$APP_EXPOSED_PORT | grep -i "IC GROUP"
+                        if [ $? -eq 0 ]; then echo "Acceptance test succeeded"; fi
                     '''
                 }
             }
