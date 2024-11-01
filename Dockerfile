@@ -14,8 +14,8 @@ COPY sources/app/templates ./templates
 COPY sources/app/static ./static
 VOLUME /opt
 
-# Expose port 8080
-# EXPOSE 8080
+# Expose port 8000
+EXPOSE 8000
 
 # Set environment variables
 ENV ODOO_URL="https://www.odoo.com/"
