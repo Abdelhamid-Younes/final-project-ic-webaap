@@ -30,7 +30,7 @@ pipeline {
             steps {
                 script{
                     sh '''
-                        
+
                         echo "Cleaning existing container if exists"
                         docker ps -a | grep -i $IMAGE_NAME && docker rm -f $IMAGE_NAME
                         docker run --name $IMAGE_NAME -d -p $APP_EXPOSED_PORT:$INTERNAL_PORT ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG
@@ -45,6 +45,7 @@ pipeline {
             steps{
                 script {
                     sh '''
+                        docker logs ${IMAGE_NAME}
                         curl http://172.17.0.1:$APP_EXPOSED_PORT | grep "IC GROUP"
                         if [ $? -eq 0 ]; then echo "Acceptance test succeed"; fi
                     '''
