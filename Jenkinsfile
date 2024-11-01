@@ -1,3 +1,5 @@
+/* import shared library */
+@Library('shared_library')_
 pipeline {
     environment {
 
@@ -77,5 +79,11 @@ pipeline {
         }
 
     }
-
+  post {
+    always {
+      script {
+        slackNotifier currentBuild.result
+      }
+    }  
+  }
 }
