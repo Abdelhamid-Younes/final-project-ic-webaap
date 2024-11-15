@@ -1,0 +1,97 @@
+---
+# Update the system
+- name: Update System Packages
+  ansible.builtin.package:
+    name: "*"
+    state: latest
+    update_cache: yes
+  when: ansible_distribution in ["CentOS", "Ubuntu"]
+
+# Install prerequisites for CentOS
+- name: Install prerequisites on CentOS
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - yum-utils
+    - device-mapper-persistent-data
+    - lvm2
+    - python3
+    - python3-pip
+  when: ansible_distribution == "CentOS"
+
+# Install prerequisites for Ubuntu
+- name: Install prerequisites on Ubuntu
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - curl
+    - python3
+    - python3-pip
+    - ca-certificates
+    - apt-transport-https
+    - software-properties-common
+  when: ansible_distribution == "Ubuntu"
+
+# Add Docker repository for CentOS
+- name: Add Docker CE repository for CentOS
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+  when: ansible_distribution == "CentOS"
+
+# Add Docker repository for Ubuntu
+- name: Add Docker CE repository for Ubuntu
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    state: present
+    update_cache: yes
+  when: ansible_distribution == "Ubuntu"
+
+# Install Docker
+- name: Install Docker
+  ansible.builtin.package:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    state: present
+  when: ansible_distribution in ["CentOS", "Ubuntu"]
+
+# Start and enable Docker service
+- name: Start and enable the Docker service
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: yes
+
+
+# Ensure the Docker group is present
+- name: Ensure Docker group is present
+  ansible.builtin.group:
+    name: docker
+    state: present
+
+# Add user to Docker group
+- name: Add user to Docker group
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: yes
+  become: yes
+
+# Install Docker Compose
+- name: Install Docker Compose
+  ansible.builtin.get_url:
+    url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    mode: '0755'
+
+# Install Docker Python package
+- name: Install Docker Python package
+  ansible.builtin.pip:
+    name: docker-py
+    state: present
+    executable: pip3
+  when: ansible_distribution in ["CentOS", "Ubuntu"]
