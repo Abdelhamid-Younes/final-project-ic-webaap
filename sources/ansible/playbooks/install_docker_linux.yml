@@ -1,6 +1,7 @@
 ---
 - name: Install Docker on Linux VM
-  hosts: all
+  hosts: dev
   become: yes
+  gather_facts: yes
   roles:
     - ansible_role_install_docker
