@@ -20,6 +20,13 @@
     - python3-pip
   when: ansible_distribution == "CentOS"
 
+# Add Docker's GPG key
+- name: Add Docker GPG key
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+  when: ansible_distribution == "Ubuntu"
+
 # Install prerequisites for Ubuntu
 - name: Install prerequisites on Ubuntu
   ansible.builtin.package:
