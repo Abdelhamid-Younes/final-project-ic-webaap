@@ -1,0 +1,9 @@
+---
+- name: "Generate the Docker Compose file"
+  template:
+    src: "odoo-docker-compose.yml.j2"  # Path to the Jinja2 template
+    dest: "/home/{{ ansible_user }}/odoo-docker-compose.yml"  # Destination path
+    mode: "0644"  # Permissions for the file
+
+- name: "Deploy Odoo using Docker Compose"
+  command: "docker-compose -f /home/{{ ansible_user }}/odoo-docker-compose.yml up -d"

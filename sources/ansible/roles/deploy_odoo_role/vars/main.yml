@@ -1,0 +1,21 @@
+---
+# variables used in odoo role
+postgres_user: odoo_user
+postgres_password: odoo_password
+postgres_db: postgres
+postgres_image: postgres:10
+postgres_port: 5432
+postgres_container_name: postgres-ctnr
+
+odoo_image: odoo:13.0
+odoo_port: 8069
+odoo_container_name: odoo-ctnr
+odoo_user: odoo_user
+odoo_password: odoo_password
+
+network_name: ic_odoo_network
+
+pgdata_volume: pgdata
+odoo_config_volume: /data_docker/config
+odoo_addons_volume: /data_docker/addons
+odoo_web_data_volume: odoo-web-data
