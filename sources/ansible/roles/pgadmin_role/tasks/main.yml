@@ -1,0 +1,15 @@
+---
+- name: "Generate the Docker Compose file"
+  template:
+    src: "pgadmin-docker-compose.yml.j2"  # Path to the Jinja2 template
+    dest: "/home/{{ ansible_user }}/pgadmin-docker-compose.yml"  # Destination path
+    mode: "0644"  # Permissions for the file
+
+- name: "Generate the config file for pgadmin"
+  template:
+    src: "servers.json.j2"  # Path to the Jinja2 template
+    dest: "/home/{{ ansible_user }}/servers.json"  # Destination path
+    mode: "0644"  # Permissions for the file
+
+- name: "Deploy pgadming Compose"
+  command: "docker-compose -f /home/{{ ansible_user }}/pgadmin-docker-compose.yml up -d"

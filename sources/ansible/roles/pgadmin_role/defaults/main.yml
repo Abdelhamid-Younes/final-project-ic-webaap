@@ -1,0 +1,15 @@
+# defaults values for pgadmin role
+network_name: ic_pgadmin_network
+pgadmin_default_email: admin@pgadmin.com
+pgadmin_default_password: pgadmin_password
+pgadmin_port: 5050
+pgadmin_data_volume: pgadmin_data
+
+
+pg_server_name: postgres
+pg_server_group: postgres_group
+pg_server_host: postgres
+pg_server_port: 5432
+pg_server_maintenance_db: postgres
+pg_server_username: odoo_user
+pg_server_ssl_mode: prefer
