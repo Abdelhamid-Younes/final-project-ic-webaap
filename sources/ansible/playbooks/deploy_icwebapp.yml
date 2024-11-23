@@ -1,7 +1,7 @@
 ---
-- name: Deploy pgadmin on Linux VM
+- name: Deploy ic-webapp onLinux VM
   hosts: dev
   become: yes
   gather_facts: yes
   roles:
-    - pgadmin_role
+    - ic-webapp_role

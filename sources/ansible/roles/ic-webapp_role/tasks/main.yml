@@ -1,0 +1,15 @@
+- name: Pull the ic-webapp Docker image
+  ansible.builtin.docker_image:
+    name: "{{ docker_image_name }}"
+    source: pull
+
+- name: Ensure the ic-webapp container is running
+  ansible.builtin.docker_container:
+    name: "{{ container_name }}"
+    image: "{{ docker_image_name }}"
+    state: started
+    ports:
+      - "{{ host_port }}:{{ container_port }}"
+    volumes: "{{ volumes }}"
+    env: "{{ env_variables }}"
+    restart_policy: always

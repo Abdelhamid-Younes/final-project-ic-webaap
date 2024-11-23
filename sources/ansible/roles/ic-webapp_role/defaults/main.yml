@@ -1,0 +1,11 @@
+# defaults/main.yml
+ansible_python_interpreter: /usr/bin/python3
+docker_image_name: "younesabdh/ic-webapp:1.0"
+container_name: "ic-webapp-ctnr"
+host_port: 8000
+container_port: 8000
+volumes:
+  - "/opt:/opt"
+env_variables:
+  ODOO_URL: "https://www.odoo.com/"
+  PGADMIN_URL: "https://www.pgadmin.org/"

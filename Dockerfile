@@ -22,5 +22,6 @@ ENV ODOO_URL="https://www.odoo.com/"
 ENV PGADMIN_URL="https://www.pgadmin.org/"
 
 # Set default command to run the app
-ENTRYPOINT ["python"]
-CMD [ "app.py" ]
+# ENTRYPOINT ["python"]
+# CMD [ "app.py" ]
+ENTRYPOINT ["python", "app.py"]
