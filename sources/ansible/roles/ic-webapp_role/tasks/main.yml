@@ -1,15 +1,9 @@
-- name: Pull the ic-webapp Docker image
-  ansible.builtin.docker_image:
-    name: "{{ docker_image_name }}"
-    source: pull
+---
+- name: "Generate the Docker Compose file"
+  template:
+    src: "icwebapp-docker-compose.yml.j2"  # Path to the Jinja2 template
+    dest: "/home/{{ ansible_user }}/icwebapp-docker-compose.yml"  # Destination path
+    mode: "0644"  # Permissions for the file
 
-- name: Ensure the ic-webapp container is running
-  ansible.builtin.docker_container:
-    name: "{{ container_name }}"
-    image: "{{ docker_image_name }}"
-    state: started
-    ports:
-      - "{{ host_port }}:{{ container_port }}"
-    volumes: "{{ volumes }}"
-    env: "{{ env_variables }}"
-    restart_policy: always
+- name: "Deploy Odoo using Docker Compose"
+  command: "docker-compose -f /home/{{ ansible_user }}/icwebapp-docker-compose.yml up -d"

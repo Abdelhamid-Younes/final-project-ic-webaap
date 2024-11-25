@@ -1,0 +1,17 @@
+version: '3.3'
+services:
+    ic-webapp:
+        container_name: ic-webapp-ctnr
+        ports:
+            - "{{ host_port }}:{{ container_port }}"
+        environment:
+            - "ODOO_URL={{ odoo_url }}"
+            - "PGADMIN_URL={{ pgadmin_url }}"
+        image: '{{ docker_image_name }}'
+        networks:
+            - ic_webapp_network
+
+networks:
+    ic_webapp_network:
+      driver: bridge
+      name: ic_webapp-network
