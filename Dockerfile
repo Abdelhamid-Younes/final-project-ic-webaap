@@ -14,14 +14,12 @@ COPY sources/app/templates ./templates
 COPY sources/app/static ./static
 VOLUME /opt
 
-# Expose port 8000
-EXPOSE 8000
+# Expose port 8080
+EXPOSE 8080
 
 # Set environment variables
 ENV ODOO_URL="https://www.odoo.com/"
 ENV PGADMIN_URL="https://www.pgadmin.org/"
 
 # Set default command to run the app
-# ENTRYPOINT ["python"]
-# CMD [ "app.py" ]
 ENTRYPOINT ["python", "app.py"]
