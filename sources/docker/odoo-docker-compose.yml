@@ -1,0 +1,46 @@
+version: '3.3'
+
+services:
+  postgres:
+    # Environment variables for PostgreSQL configuration
+    environment:
+      - POSTGRES_USER=odoo_user
+      - POSTGRES_PASSWORD=odoo_password
+      - POSTGRES_DB=postgres
+    networks:
+      - ic_odoo_network  # Attach PostgreSQL to the specified network
+    volumes:
+      - 'pgdata:/var/lib/postgresql/data'
+    container_name: postgres-ctnr
+    image: 'postgres:10'
+    ports:
+      - '5432:5432'  # Map PostgreSQL port to the host
+
+  odoo:
+    depends_on:
+      - postgres  # Ensure PostgreSQL starts before Odoo
+    ports:
+      - '8069:8069'  # Map Odoo port to the host
+    container_name: odoo-ctnr
+    networks:
+      - ic_odoo_network  # Attach Odoo to the specified network
+    volumes:
+      - '/data_docker/config:/etc/odoo'
+      - '/data_docker/addons:/mnt/extra-addons'
+      - 'odoo-web-data:/var/lib/odoo'
+    environment:
+      - USER=odoo_user  # Database username (must match PostgreSQL)
+      - PASSWORD=odoo_password  # Database password (must match PostgreSQL)
+      - HOST=postgres  # Hostname of the PostgreSQL service (defined in this file)
+    image: 'odoo:13.0'
+
+# Define named volumes to persist data
+volumes:
+  odoo-web-data:  # Persist Odoo application data
+  pgdata:  # Persist PostgreSQL database data
+
+# Define a custom bridge network
+networks:
+  ic_odoo_network:
+    driver: bridge
+    name: ic_odoo_network

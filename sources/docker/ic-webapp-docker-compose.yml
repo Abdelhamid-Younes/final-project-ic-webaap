@@ -1,0 +1,17 @@
+version: '3.3'
+services:
+    ic-webapp:
+        container_name: ic-webapp-ctnr
+        ports:
+            - "8080:8080"
+        environment:
+            - "ODOO_URL=http://192.168.99.12:8069"
+            - "PGADMIN_URL=http://192.168.99.12:5050"
+        image: 'younesabdh/ic-webapp:v1.0'
+        networks:
+            - ic_webapp_network
+
+networks:
+    ic_webapp_network:
+      driver: bridge
+      name: ic_webapp-network
