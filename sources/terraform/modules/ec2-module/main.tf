@@ -1,44 +1,34 @@
-data "aws_ami" "ubuntu_ami" {
+data "aws_ami" "ubuntu_18_ami" {
   most_recent = true
-  owners      = ["014893574759"]
 
   filter {
     name   = "name"
-    values = ["*ubuntu*"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
   }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["099720109477"] # Canonical's AWS Account ID
 }
 
-resource "aws_instance" "my_ec2" {
-  ami             = data.aws_ami.ubuntu_ami.id
+
+resource "aws_instance" "icwebapp_ec2" {
+  ami             = data.aws_ami.ubuntu_18_ami.id
   instance_type   = var.instance_type
-  key_name        = "devops-hamid"
+  key_name        = var.aws_ssh_key
   security_groups = ["${var.sg_name}"]
   tags            = var.ec2_name_tag
   availability_zone = var.az
 
+  # provisioner "local-exec" {
+  #   command = "echo IP: ${var.public_ip} > ec2_ip.txt"
+  # }
+  
   root_block_device {
     delete_on_termination = true
   }
-
-/*
-  provisioner "local-exec" {
-    command = "echo PUBLIC IP: ${var.public_ip} >> ec2_IP.txt"
-  }
-  */
   
-  provisioner "remote-exec" {
-    inline = [
-      "sudo apt update -y",
-      "sudo apt install nginx -y",
-      "sudo systemctl start nginx",
-      "sudo systemctl enable nginx"
-    ]
-     connection {
-       type = "ssh"
-       user = var.user
-       private_key = file("C:/Users/Administrados/devops-hamid.pem")
-       host = self.public_ip
-     }
-  }
-
 }
