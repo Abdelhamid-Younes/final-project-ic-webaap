@@ -1,6 +1,6 @@
 variable "instance_type" {
   type = string
-  default = "t2.nano"
+  default = "t2.micro"
 }
 variable "aws_ssh_key" {
   type = string
@@ -9,14 +9,14 @@ variable "aws_ssh_key" {
 
 variable "ec2_name_tag" {
   default = {
-    Name = "NULL"
+    Name = "icwebapp-prod"
   }
 }
 
 variable "sg_name" {
   type = string
   description = "Security group name"
-  default = "NULL"
+  default = "icwebapp-prod-sg"
 }
 
 variable "az" {
@@ -27,10 +27,16 @@ variable "az" {
 
 variable "public_ip" {
   type = string
-  default = "NULL"
+  default = "eip"
 }
 
 variable "user" {
   type = string
   default = "ubuntu"
+}
+
+variable "deploy_env" {
+  type = string
+  description = "describe where apps are deployed"
+  default = "prod"
 }
