@@ -1,0 +1,8 @@
+# Ignore all `.log` files
+*.log
+
+# Ignore .terraform files
+.terraform*
+
+# Ignore ec2_ip file
+ec2_ip*
