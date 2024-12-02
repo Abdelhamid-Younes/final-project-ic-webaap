@@ -1,7 +1,7 @@
 # defaults/main.yml
 ansible_python_interpreter: /usr/bin/python3
 docker_image_name: "younesabdh/ic-webapp:v1.0"
-host_port: 8080
+host_port: 8000
 container_port: 8080
 odoo_url: "http://{{ odoo_host }}:8069"
 pgadmin_url: "http://{{ pgadmin_host }}:5050"
