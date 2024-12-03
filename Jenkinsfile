@@ -46,7 +46,7 @@ pipeline {
             steps{
                 script {
                     sh '''
-                        curl http://192.168.99.10:$APP_EXPOSED_PORT | grep -i "IC GROUP"
+                        curl http://172.17.0.2:$APP_EXPOSED_PORT | grep -i "IC GROUP"
                         if [ $? -eq 0 ]; then echo "Acceptance test succeeded"; fi
                     '''
                 }
