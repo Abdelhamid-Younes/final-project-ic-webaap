@@ -4,17 +4,17 @@ pipeline {
     environment {
 
         IMAGE_NAME = "${PARAM_IMAGE_NAME}"                    /*ic-webapp*/
-        APP_NAME = "${PARAM_APP_NAME}"                        /*younesabdh*/
+        //APP_NAME = "${PARAM_APP_NAME}"                        
         IMAGE_TAG = "${PARAM_IMAGE_TAG}"                      /*1.0*/
         
 
-        DOCKERHUB_USR = "${PARAM_DOCKERHUB_ID}"
-        DOCKERHUB_PSW = credentials('dockerhub')
-        APP_EXPOSED_PORT = "${PARAM_PORT_EXPOSED}"            /*8000 by default*/
+        DOCKERHUB_USR = "${PARAM_DOCKERHUB_ID}"             /*younesabdh*/
+        DOCKERHUB_PSW = credentials('dockerhub_psw')
+        APP_EXPOSED_PORT = "${PARAM_EXPOSED_PORT}"            /*8000 by default*/
 
 
         INTERNAL_PORT = "${PARAM_INTERNAL_PORT}"              /*8000 by default*/
-        EXTERNAL_PORT = "${PARAM_PORT_EXPOSED}"
+        EXTERNAL_PORT = "${PARAM_EXPOSED_PORT}"
         CONTAINER_IMAGE = "${DOCKERHUB_USR}/${IMAGE_NAME}:${IMAGE_TAG}"
     }
     agent none
