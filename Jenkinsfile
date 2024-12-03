@@ -45,7 +45,7 @@ pipeline {
             agent any
             steps{
                 script {
-                    sh 'docker stop ${MAGE_NAME} || true && docker rm ${IMAGE_NAME} || true'
+                    sh 'docker stop ${IMAGE_NAME} || true && docker rm ${IMAGE_NAME} || true'
                     sh 'docker run --name $IMAGE_NAME -d -p $APP_EXPOSED_PORT:$INTERNAL_PORT ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG'
                     sh 'curl -k http://172.17.0.1:$APP_EXPOSED_PORT | grep -i "IC GROUP"'
                     sh 'sleep 10'
