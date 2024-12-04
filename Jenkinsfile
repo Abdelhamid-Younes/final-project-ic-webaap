@@ -82,7 +82,7 @@ pipeline {
             agent { 
                 docker { 
                     image 'jenkins/jnlp-agent-terraform'  
-                    args '--entrypoint=""' // Override default entrypoint if necessary to avoid conflicts
+                    //args '--entrypoint=""' // Override default entrypoint if necessary to avoid conflicts
                 } 
             }
             environment {
