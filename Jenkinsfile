@@ -120,8 +120,9 @@ pipeline {
                         sleep 30
                     
                         echo "Destroy infrastructure changes"
-                        terraform destroy -auto-approve
                     '''
+                        //terraform destroy -auto-approve
+
                 }
             }
         }
