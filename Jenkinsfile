@@ -78,6 +78,53 @@ pipeline {
                 }
             }
         }
+        stage('Provision EC2 on AWS with Terraform') {
+            agent { 
+                docker { 
+                    image 'jenkins/jnlp-agent-terraform'  
+                    args '--entrypoint=""' // Override default entrypoint if necessary to avoid conflicts
+                } 
+            }
+            environment {
+                AWS_ACCESS_KEY = credentials('aws_access_key')
+                AWS_SECRET_KEY = credentials('aws_secret_key')
+                AWS_PRIVATE_KEY = credentials('aws_ private_key')
+            }
+            steps {
+                script {
+                    sh '''
+                        echo "Setting up AWS credentials"
+                        rm -rf devops-hamid.pem ~/.aws || true
+                        mkdir -p ~/.aws
+                        cat > ~/.aws/credentials <<-EOF
+                        [default]
+                        aws_access_key_id=${AWS_ACCESS_KEY_ID}
+                        aws_secret_access_key=${AWS_SECRET_ACCESS_KEY}
+                        EOF
+                        chmod 600 ~/.aws/credentials
+
+                        echo "Configuring AWS private key"
+                        echo "$PRIVATE_AWS_KEY" > devops-hamid.pem
+                        chmod 400 devops-hamid.pem
+
+                        echo "Initializing Terraform"
+                        cd "./sources/terraform/ressources/app"
+                        terraform init -input=false
+
+                        echo "Planning infrastructure changes"
+                        terraform plan -out=tfplan
+
+                        echo "Applying infrastructure changes"
+                        terraform apply -input=false -auto-approve tfplan
+
+                        sleep 30
+                    
+                        echo "Destroy infrastructure changes"
+                        terraform destroy -auto-approve
+                    '''
+                }
+            }
+        }
 
     }
   post {
