@@ -145,7 +145,7 @@ pipeline {
 
                         echo "Applying Terraform plan"
                         terraform apply -input=false -auto-approve tfplan
-
+                    '''
                         
                 }
             }
