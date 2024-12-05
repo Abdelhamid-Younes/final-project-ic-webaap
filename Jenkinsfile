@@ -113,11 +113,10 @@ pipeline {
                         echo "Setting up AWS credentials"
                         rm -rf devops-hamid.pem ~/.aws || true
                         mkdir -p ~/.aws
-                        cat > ~/.aws/credentials <<-EOF
-                        [default]
-                        aws_access_key_id=${AWS_ACCESS_KEY}
-                        aws_secret_access_key=${AWS_SECRET_KEY}
-                        EOF
+
+                        echo "[default]" > ~/.aws/credentials
+                        echo "aws_access_key_id=$AWS_ACCESS_KEY" >> ~/.aws/credentials
+                        echo "aws_secret_access_key=$AWS_SECRET_KEY" >> ~/.aws/credentials
                         chmod 600 ~/.aws/credentials
 
                         echo "Configuring AWS private key"
