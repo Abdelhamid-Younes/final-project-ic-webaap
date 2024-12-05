@@ -17,7 +17,7 @@ pipeline {
         EXTERNAL_PORT = "${PARAM_EXPOSED_PORT}"
         CONTAINER_IMAGE = "${DOCKERHUB_USR}/${IMAGE_NAME}:${IMAGE_TAG}"
     }
-    agent none
+    agent any
     stages {
 
         stage('Cloning code') {
