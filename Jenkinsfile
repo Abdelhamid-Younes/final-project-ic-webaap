@@ -125,7 +125,7 @@ pipeline {
                         chmod 400 devops-hamid.pem
 
                         echo "Initializing Terraform"
-                        cd "./sources/terraform/ressources/app"
+                        cd "./sources/terraform/dev"
                         terraform init -input=false
 
                         echo "Planning infrastructure changes"
