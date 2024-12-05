@@ -124,22 +124,29 @@ pipeline {
                         echo "$AWS_PRIVATE_KEY" > devops-hamid.pem
                         chmod 400 devops-hamid.pem
 
+                        echo "Debugging AWS credentials"
+                        cat ~/.aws/credentials
+
+                        echo "Debugging AWS private key"
+                        cat devops-hamid.pem | sed 's/./*/g'  # Mask private key but ensure it exists
+
                         echo "Initializing Terraform"
                         cd "./sources/terraform/dev"
                         terraform init -input=false
 
-                        echo "Planning infrastructure changes"
+                        echo "Validating Terraform configuration"
+                        terraform validate
+
+                        echo "Generating Terraform plan"
                         terraform plan -out=tfplan
 
-                        echo "Applying infrastructure changes"
+                        echo "Debugging generated Terraform plan"
+                        terraform show tfplan
+
+                        echo "Applying Terraform plan"
                         terraform apply -input=false -auto-approve tfplan
 
-                        sleep 30
-                    
-                        echo "Destroy infrastructure changes"
-                    '''
-                        //terraform destroy -auto-approve
-
+                        
                 }
             }
         }
