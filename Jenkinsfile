@@ -19,6 +19,19 @@ pipeline {
     }
     agent none
     stages {
+
+        stage('Cloning code') {
+            steps {
+                script {
+                    sh '''
+                         rm -rf final-project-ic-webapp || echo "Directory doesn't exists "
+                         sleep 2
+                         git clone https://github.com/Abdelhamid-Younes/final-project-ic-webapp.git
+                     '''
+                }
+            }
+        }
+
         stage('Build image') {
             agent any
             steps {
@@ -27,6 +40,7 @@ pipeline {
                 }
             }
         }
+
         stage('Run container based on built image'){
             agent any
             steps {
@@ -41,6 +55,7 @@ pipeline {
                 }
             }
         }
+
         stage('Test image') {
             agent any
             steps{
@@ -53,6 +68,7 @@ pipeline {
                 }
             }
         }
+
         stage('Clean container') {
             agent any
             steps{
@@ -78,6 +94,7 @@ pipeline {
                 }
             }
         }
+
         stage('Provision EC2 on AWS with Terraform') {
             agent { 
                 docker { 
@@ -126,7 +143,6 @@ pipeline {
                 }
             }
         }
-
     }
   post {
     always {
