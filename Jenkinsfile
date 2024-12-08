@@ -166,7 +166,7 @@ pipeline {
                         cd "./sources/terraform/dev/files"
                         ls
 
-                        cat files/ec2_IP.txt
+                        cat ec2_IP.txt
                         
                         EC2_PUBLIC_IP=$(grep -oP '(?<=IP: ).*' files/ec2_IP.txt)
                         
