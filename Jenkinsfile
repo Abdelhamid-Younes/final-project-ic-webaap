@@ -6,16 +6,14 @@ pipeline {
         IMAGE_NAME = "${PARAM_IMAGE_NAME}"                    /*ic-webapp*/
         //APP_NAME = "${PARAM_APP_NAME}"                        
         IMAGE_TAG = "${PARAM_IMAGE_TAG}"                      /*1.0*/
-        
-
-        DOCKERHUB_USR = "${PARAM_DOCKERHUB_ID}"             /*younesabdh*/
-        DOCKERHUB_PSW = credentials('dockerhub_psw')
         APP_EXPOSED_PORT = "${PARAM_EXPOSED_PORT}"            /*8000 by default*/
-
-
         INTERNAL_PORT = "${PARAM_INTERNAL_PORT}"              /*8000 by default*/
         EXTERNAL_PORT = "${PARAM_EXPOSED_PORT}"
         CONTAINER_IMAGE = "${DOCKERHUB_USR}/${IMAGE_NAME}:${IMAGE_TAG}"
+        DOCKERHUB_USR = "${PARAM_DOCKERHUB_ID}"             /*younesabdh*/
+        DOCKERHUB_PSW = credentials('dockerhub_psw')
+        PRIVATE_KEY = credentials('private_key')            // SSH private key for Ansible access
+
     }
     agent any
     stages {
@@ -149,6 +147,29 @@ pipeline {
                 }
             }
         }
+        stage ('Update Ansible host_vars with EC2 IP'){
+            agent any 
+            steps {
+                script {
+                    sh '''
+                        echo "Cleaning up old files"
+                        rm -f id_rsa
+
+                        echo "Copying SSH private key for Ansible"
+                        echo $PRIVATE_KEY > id_rsa
+                        chmod 600 id_rsa
+                        
+                        EC2_PUBLIC_IP=$(grep -oP '(?<=IP: ).*' files/ec2_IP.txt)
+                        
+                        if [ -z "$EC2_PUBLIC_IP" ]; then
+                            echo "Error: EC2 public IP could not be retrieved from ec2_IP.txt."
+                            exit 1
+                        fi
+                    '''
+                }
+            }
+        }
+
     }
   post {
     always {
