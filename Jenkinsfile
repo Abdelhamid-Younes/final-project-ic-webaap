@@ -163,8 +163,8 @@ pipeline {
                         echo $PRIVATE_KEY > id_rsa
                         chmod 600 id_rsa
 
-                        cd "./sources/terraform/dev"
-                        pwd
+                        cd "./sources/terraform/dev/files"
+                        ls
 
                         cat files.ec2_IP.txt
                         
