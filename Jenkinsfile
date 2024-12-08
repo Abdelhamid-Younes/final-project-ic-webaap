@@ -93,7 +93,7 @@ pipeline {
             }
         }
 
-        /*stage('Provision EC2 on AWS with Terraform') {
+        stage('Provision EC2 on AWS with Terraform') {
             agent { 
                 docker { 
                     image 'jenkins/jnlp-agent-terraform'  
@@ -125,7 +125,7 @@ pipeline {
                         cat ~/.aws/credentials
 
                         echo "Debugging AWS private key"
-                        cat devops-hamid.pem | sed 's/./*//*g'  # Mask private key but ensure it exists
+                        cat devops-hamid.pem | sed 's/./*/g'  # Mask private key but ensure it exists
 
                         echo "Initializing Terraform"
                         cd "./sources/terraform/dev"
@@ -146,7 +146,7 @@ pipeline {
                         
                 }
             }
-        }*/
+        }
         
         stage ('Update Ansible host_vars with EC2 IP'){
             agent any 
@@ -163,8 +163,7 @@ pipeline {
                         echo $PRIVATE_KEY > id_rsa
                         chmod 600 id_rsa
 
-                        
-
+                        cd "./sources/terraform/dev"
                         
                         EC2_PUBLIC_IP=$(grep -oP '(?<=IP: ).*' files/ec2_IP.txt)
                         
