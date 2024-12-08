@@ -156,6 +156,7 @@ pipeline {
 
                         echo "Current working directory:"
                         pwd
+                        ls
                         echo "Cleaning up old files"
                         rm -f id_rsa
 
