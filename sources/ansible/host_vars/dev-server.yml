@@ -1,3 +1,2 @@
 ansible_host: 192.168.99.12
-#ansible_ssh_private_key_file: ~/.ssh/ubuntu_key.pem # Replace with the actual ssh public key of the client machine
-ansible_python_interpreter: /usr/bin/python3
+#ansible_python_interpreter: /usr/bin/python3

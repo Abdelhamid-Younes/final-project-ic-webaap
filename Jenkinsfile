@@ -138,25 +138,21 @@ pipeline {
                         ls
                         cat files/ec2_IP.txt
 
+                        echo "Generating host_vars for EC2 servers"
+                        echo "ansible_host: $(awk '{print $2}' /var/jenkins_home/workspace/ic-webapp/sources/terraform/dev/files/ec2_IP.txt)" > sources/ansible/host_vars/dev_server.yml
+                        
                         cd "/var/jenkins_home/workspace/ic-webapp"
 
                         echo "Cleaning up old files"
                         rm -f id_rsa
 
                         echo "Copying SSH private key for Ansible"
-                        echo $PRIVATE_KEY > id_rsa
+                        cp $PRIVATE_KEY id_rsa
                         chmod 600 id_rsa
 
 
 
-                    '''
-                    timeout(time: 3, unit: "MINUTES") {
-                        input message: "Confirmer vous la suppression de la dev dans AWS ?", ok: 'Yes'
-                    } 
-                    sh'''
-                        cd "./sources/terraform/dev"
-                        terraform destroy --auto-approve
-                    '''                       
+                    '''                   
                 }
             }
         }
