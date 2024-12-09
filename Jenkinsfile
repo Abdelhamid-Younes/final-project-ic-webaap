@@ -143,7 +143,7 @@ pipeline {
             }
         }
         
-        stage ('Update Ansible host_vars with EC2 IP'){
+        /*stage ('Update Ansible host_vars with EC2 IP'){
             agent any 
             steps {
                 script {
@@ -169,7 +169,7 @@ pipeline {
                     '''
                 }
             }
-        }
+        }*/
 
     }
   post {
