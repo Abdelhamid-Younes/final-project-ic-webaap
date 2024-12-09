@@ -141,12 +141,42 @@ pipeline {
                         echo "Generating host_vars for EC2 servers"
                         echo "ansible_host: $(awk '{print $2}' /files/ec2_IP.txt)" > /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
 
+                        cd "/var/jenkins_home/workspace/ic-webapp"
+                        echo "Cleaning up old files"
+                        rm -f id_rsa
+
+                        echo "Copying SSH private key for Ansible"
+                        echo $PRIVATE_KEY > id_rsa
+                        chmod 600 id_rsa
+
                     '''                   
                 }
             }
         }
+        stage ('ping dev server'){
+            agent {
+                docker {
+                    image 'registry.gitlab.com/robconnolly/docker-ansible:latest'
+                }
+                }
+            stages {
+                stage {
+                    steps {
+                        script {
+                            sh '''
+                                apt update -y
+                                apt install sshpass -y 
+                                export ANSIBLE_CONFIG=$PWD/ansible.cfg
+                                ansible dev -m ping --private-key id_rsa 
+                            '''
+                        }
+                    }
+                }
+            }
+            
+        }
         
-        stage ('Update Ansible host_vars with EC2 IP'){
+        /*stage ('Update Ansible host_vars with EC2 IP'){
             agent any 
             steps {
                 script {
@@ -169,7 +199,7 @@ pipeline {
                     '''  
                 }
             }
-        }
+        }*/
 
     }
   post {
