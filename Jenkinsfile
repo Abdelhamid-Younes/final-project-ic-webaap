@@ -138,19 +138,12 @@ pipeline {
                         ls
                         cat files/ec2_IP.txt
 
-                    '''
-                    timeout(time: 3, unit: "MINUTES") {
-                        input message: "Confirmer vous la suppression de la dev dans AWS ?", ok: 'Yes'
-                    } 
-                    sh'''
-                        cd "./sources/terraform/dev"
-                        terraform destroy --auto-approve
-                    '''                       
+                    '''                     
                 }
             }
         }
         
-        /*stage ('Update Ansible host_vars with EC2 IP'){
+        stage ('Update Ansible host_vars with EC2 IP'){
             agent any 
             steps {
                 script {
@@ -174,9 +167,16 @@ pipeline {
                             exit 1
                         fi
                     '''
+                    timeout(time: 3, unit: "MINUTES") {
+                        input message: "Confirmer vous la suppression de la dev dans AWS ?", ok: 'Yes'
+                    } 
+                    sh'''
+                        cd "./sources/terraform/dev"
+                        terraform destroy --auto-approve
+                    '''  
                 }
             }
-        }*/
+        }
 
     }
   post {
