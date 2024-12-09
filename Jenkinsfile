@@ -60,7 +60,7 @@ pipeline {
                 script {
                     sh 'docker stop ${IMAGE_NAME} || true && docker rm ${IMAGE_NAME} || true'
                     sh 'docker run --name $IMAGE_NAME -d -p $APP_EXPOSED_PORT:$INTERNAL_PORT ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG'
-                    sh 'sleep 10'
+                    sh 'sleep 5'
                     sh 'curl -k http://172.17.0.1:$APP_EXPOSED_PORT | grep -i "IC GROUP"'
                     sh 'if [ $? -eq 0 ]; then echo "Acceptance test succeeded"; fi'
                 }
@@ -141,8 +141,10 @@ pipeline {
                         terraform apply -input=false -auto-approve tfplan
 
                         echo "Current working directory:"
+                        cd "/var/jenkins_home/workspace/ic-webapp/"
                         pwd
                         ls
+                        cat ec2_IP.txt
                     '''
                         
                 }
