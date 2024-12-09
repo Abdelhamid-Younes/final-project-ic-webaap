@@ -15,7 +15,7 @@ pipeline {
         PRIVATE_KEY = credentials('private_key')            // SSH private key for Ansible access
 
     }
-    agent any
+    agent none
     stages {
 
         /*stage('Cloning code') {
