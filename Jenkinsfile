@@ -139,25 +139,14 @@ pipeline {
                         cat files/ec2_IP.txt
 
                         echo "Generating host_vars for EC2 servers"
-                        echo "ansible_host: $(awk '{print $2}' /var/jenkins_home/workspace/ic-webapp/sources/terraform/dev/files/ec2_IP.txt)" > /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev_server.yml
-                        
-                        cd "/var/jenkins_home/workspace/ic-webapp"
-
-                        echo "Cleaning up old files"
-                        rm -f id_rsa
-
-                        echo "Copying SSH private key for Ansible"
-                        cp $PRIVATE_KEY id_rsa
-                        chmod 600 id_rsa
-
-
+                        echo "ansible_host: $(awk '{print $2}' /var/jenkins_home/workspace/ic-webapp/sources/terraform/dev/files/ec2_IP.txt)" > /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
 
                     '''                   
                 }
             }
         }
         
-        /*stage ('Update Ansible host_vars with EC2 IP'){
+        stage ('Update Ansible host_vars with EC2 IP'){
             agent any 
             steps {
                 script {
@@ -169,17 +158,7 @@ pipeline {
                         echo "Copying SSH private key for Ansible"
                         echo $PRIVATE_KEY > id_rsa
                         chmod 600 id_rsa
-
-                        cd "./sources/terraform/dev/files"
-                        ls
-                        cat ec2_IP.txt
                         
-                        EC2_PUBLIC_IP=$(grep -oP '(?<=IP: ).*' ec2_IP.txt)
-                        
-                        if [ -z "$EC2_PUBLIC_IP" ]; then
-                            echo "Error: EC2 public IP could not be retrieved from ec2_IP.txt."
-                            exit 1
-                        fi
                     '''
                     timeout(time: 3, unit: "MINUTES") {
                         input message: "Confirmer vous la suppression de la dev dans AWS ?", ok: 'Yes'
@@ -190,7 +169,7 @@ pipeline {
                     '''  
                 }
             }
-        }*/
+        }
 
     }
   post {
