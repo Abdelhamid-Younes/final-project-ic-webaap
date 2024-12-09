@@ -137,18 +137,19 @@ pipeline {
                         echo "Generating Terraform plan"
                         terraform plan -out=tfplan
 
-                        echo "Debugging generated Terraform plan"
-                        terraform show tfplan
-
                         echo "Applying Terraform plan"
                         terraform apply -input=false -auto-approve tfplan
+
+                        echo "Current working directory:"
+                        pwd
+                        ls
                     '''
                         
                 }
             }
         }
         
-        stage ('Update Ansible host_vars with EC2 IP'){
+        /*stage ('Update Ansible host_vars with EC2 IP'){
             agent any 
             steps {
                 script {
@@ -178,7 +179,7 @@ pipeline {
                     '''
                 }
             }
-        }
+        }*/
 
     }
   post {
