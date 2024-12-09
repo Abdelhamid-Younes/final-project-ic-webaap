@@ -138,22 +138,35 @@ pipeline {
                         ls
                         cat files/ec2_IP.txt
 
-                    '''                     
+                        cd "/var/jenkins_home/workspace/ic-webapp"
+
+                        echo "Cleaning up old files"
+                        rm -f id_rsa
+
+                        echo "Copying SSH private key for Ansible"
+                        echo $PRIVATE_KEY > id_rsa
+                        chmod 600 id_rsa
+
+
+
+                    '''
+                    timeout(time: 3, unit: "MINUTES") {
+                        input message: "Confirmer vous la suppression de la dev dans AWS ?", ok: 'Yes'
+                    } 
+                    sh'''
+                        cd "./sources/terraform/dev"
+                        terraform destroy --auto-approve
+                    '''                       
                 }
             }
         }
         
-        stage ('Update Ansible host_vars with EC2 IP'){
+        /*stage ('Update Ansible host_vars with EC2 IP'){
             agent any 
             steps {
                 script {
                     sh '''
-                        echo "Current working directory:"
-                        pwd
-                        ls
-                        cat files/ec2_IP.txt
-                        
-                                      
+
                         echo "Cleaning up old files"
                         rm -f id_rsa
 
@@ -181,7 +194,7 @@ pipeline {
                     '''  
                 }
             }
-        }
+        }*/
 
     }
   post {
