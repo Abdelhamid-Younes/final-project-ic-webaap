@@ -97,7 +97,6 @@ pipeline {
             agent { 
                 docker { 
                     image 'jenkins/jnlp-agent-terraform'  
-                    //args '--entrypoint=""' // Override default entrypoint if necessary to avoid conflicts
                 } 
             }
             environment {
@@ -121,12 +120,6 @@ pipeline {
                         echo "$AWS_PRIVATE_KEY" > devops-hamid.pem
                         chmod 400 devops-hamid.pem
 
-                        echo "Debugging AWS credentials"
-                        cat ~/.aws/credentials
-
-                        echo "Debugging AWS private key"
-                        cat devops-hamid.pem | sed 's/./*/g'  # Mask private key but ensure it exists
-
                         echo "Initializing Terraform"
                         cd "./sources/terraform/dev"
                         terraform init -input=false
@@ -144,21 +137,18 @@ pipeline {
                         pwd
                         ls
                         cat files/ec2_IP.txt
-                    '''
-                        
+
+                    '''                        
                 }
             }
         }
         
-        /*stage ('Update Ansible host_vars with EC2 IP'){
+        stage ('Update Ansible host_vars with EC2 IP'){
             agent any 
             steps {
                 script {
                     sh '''
 
-                        echo "Current working directory:"
-                        pwd
-                        ls
                         echo "Cleaning up old files"
                         rm -f id_rsa
 
@@ -168,10 +158,9 @@ pipeline {
 
                         cd "./sources/terraform/dev/files"
                         ls
-
                         cat ec2_IP.txt
                         
-                        EC2_PUBLIC_IP=$(grep -oP '(?<=IP: ).*' files/ec2_IP.txt)
+                        EC2_PUBLIC_IP=$(grep -oP '(?<=IP: ).*' ec2_IP.txt)
                         
                         if [ -z "$EC2_PUBLIC_IP" ]; then
                             echo "Error: EC2 public IP could not be retrieved from ec2_IP.txt."
@@ -180,7 +169,7 @@ pipeline {
                     '''
                 }
             }
-        }*/
+        }
 
     }
   post {
