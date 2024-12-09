@@ -141,10 +141,9 @@ pipeline {
                         terraform apply -input=false -auto-approve tfplan
 
                         echo "Current working directory:"
-                        cd "/var/jenkins_home/workspace/ic-webapp/"
                         pwd
                         ls
-                        cat ec2_IP.txt
+                        cat files/ec2_IP.txt
                     '''
                         
                 }
