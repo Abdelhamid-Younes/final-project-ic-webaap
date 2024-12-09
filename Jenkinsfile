@@ -18,7 +18,7 @@ pipeline {
     agent any
     stages {
 
-        stage('Cloning code') {
+        /*stage('Cloning code') {
             steps {
                 script {
                     sh '''
@@ -28,7 +28,7 @@ pipeline {
                      '''
                 }
             }
-        }
+        }*/
 
         stage('Build image') {
             agent any
