@@ -29,7 +29,7 @@ pipeline {
                 }
             }
         }*/
-
+/*
         stage('Build image') {
             agent any
             steps {
@@ -92,7 +92,7 @@ pipeline {
                 }
             }
         }
-
+*/
         stage('Provision EC2 on AWS with Terraform') {
             agent { 
                 docker { 
