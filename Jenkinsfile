@@ -158,7 +158,7 @@ pipeline {
                 docker {
                     image 'registry.gitlab.com/robconnolly/docker-ansible:latest'
                 }
-                }
+            }
             stages {
                 stage {
                     steps {
