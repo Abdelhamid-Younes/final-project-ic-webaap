@@ -1,6 +1,6 @@
 variable "instance_type" {
   type = string
-  default = "t2.micro"
+  default = "t2.nano"
 }
 variable "aws_ssh_key" {
   type = string
@@ -35,8 +35,8 @@ variable "user" {
   default = "ubuntu"
 }
 
-variable "deploy_env" {
-  type = string
-  description = "describe where apps are deployed"
-  default = "dev"
-}
+# variable "deploy_env" {
+#   type = string
+#   description = "describe where apps are deployed"
+#   default = "dev"
+# }
