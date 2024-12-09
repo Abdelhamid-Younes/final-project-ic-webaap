@@ -172,6 +172,19 @@ pipeline {
                         }
                     }
                 }
+                stage ('deploy application'){
+                    steps {
+                        script {
+                            /*sh '''
+                                export ANSIBLE_CONFIG=$PWD/ansible.cfg
+                                ansible-playbook playbooks/icwebapp.yml --private_key private_key
+                            '''*/
+                            sh'''
+                                pwd 
+                            '''
+                        }
+                    }
+                }
             }
             
         }
