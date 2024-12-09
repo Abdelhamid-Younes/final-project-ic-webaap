@@ -153,41 +153,35 @@ pipeline {
                 }
             }
         }
-        stage ('ping dev server'){
+
+        stage('Ping dev server') {
             agent {
                 docker {
                     image 'registry.gitlab.com/robconnolly/docker-ansible:latest'
                 }
             }
-            stages {
-                stage {
-                    steps {
-                        script {
-                            sh '''
-                                apt update -y
-                                apt install sshpass -y 
-                                export ANSIBLE_CONFIG=$PWD/ansible.cfg
-                                ansible dev -m ping --private-key id_rsa 
-                            '''
-                        }
-                    }
-                }
-                stage ('deploy application'){
-                    steps {
-                        script {
-                            /*sh '''
-                                export ANSIBLE_CONFIG=$PWD/ansible.cfg
-                                ansible-playbook playbooks/icwebapp.yml --private_key private_key
-                            '''*/
-                            sh'''
-                                pwd 
-                            '''
-                        }
-                    }
+            steps {
+                script {
+                    sh '''
+                        apt update -y
+                        apt install sshpass -y 
+                        export ANSIBLE_CONFIG=$PWD/ansible.cfg
+                        ansible dev -m ping --private-key id_rsa 
+                    '''
                 }
             }
-            
         }
+
+        /*stage('Deploy application') {
+            steps {
+                script {
+                    sh '''
+                        export ANSIBLE_CONFIG=$PWD/ansible.cfg
+                        ansible-playbook playbooks/icwebapp.yml --private_key private_key
+                    '''
+                }
+            }
+        }*/
         
         /*stage ('Update Ansible host_vars with EC2 IP'){
             agent any 
