@@ -139,7 +139,7 @@ pipeline {
                         cat files/ec2_IP.txt
 
                     '''
-                    timeout(time: 3 unit: "MINUTES") {
+                    timeout(time: 3, unit: "MINUTES") {
                         input message: "Confirmer vous la suppression de la dev dans AWS ?", ok: 'Yes'
                     } 
                     sh'''
