@@ -139,7 +139,7 @@ pipeline {
                         cat files/ec2_IP.txt
 
                         echo "Generating host_vars for EC2 servers"
-                        echo "ansible_host: $(awk '{print $2}' /var/jenkins_home/workspace/ic-webapp/sources/terraform/dev/files/ec2_IP.txt)" > sources/ansible/host_vars/dev_server.yml
+                        echo "ansible_host: $(awk '{print $2}' /var/jenkins_home/workspace/ic-webapp/sources/terraform/dev/files/ec2_IP.txt)" > /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev_server.yml
                         
                         cd "/var/jenkins_home/workspace/ic-webapp"
 
