@@ -140,6 +140,14 @@ pipeline {
 
                     '''                        
                 }
+                script {       
+                    timeout(time: 2, unit: "MINUTES") {
+                        input message: "Confirmer vous la suppression de la dev dans AWS ?", ok: 'Yes'
+                    } 
+                    sh'''
+                        terraform destroy --auto-approve
+                    '''                            
+                }
             }
         }
         
