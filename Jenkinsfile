@@ -138,15 +138,14 @@ pipeline {
                         ls
                         cat files/ec2_IP.txt
 
-                    '''                        
-                }
-                script {       
-                    timeout(time: 2, unit: "MINUTES") {
+                    '''
+                    timeout(time: 1, unit: "MINUTES") {
                         input message: "Confirmer vous la suppression de la dev dans AWS ?", ok: 'Yes'
                     } 
                     sh'''
+                        pwd
                         terraform destroy --auto-approve
-                    '''                            
+                    '''                       
                 }
             }
         }
