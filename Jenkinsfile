@@ -148,7 +148,12 @@ pipeline {
             steps {
                 script {
                     sh '''
-
+                        echo "Current working directory:"
+                        pwd
+                        ls
+                        cat files/ec2_IP.txt
+                        
+                                      
                         echo "Cleaning up old files"
                         rm -f id_rsa
 
