@@ -164,9 +164,11 @@ pipeline {
                 script {
                     sh '''
                         apt update -y
-                        apt install sshpass -y 
+                        apt install sshpass -y
+                        pwd
+
                         export ANSIBLE_CONFIG=$PWD/ansible.cfg
-                        ansible dev -m ping --private-key id_rsa 
+                        ansible -i source/ansible/inventory/hosts.yml dev -m ping --private-key devops-hamid.pem 
                     '''
                 }
             }
