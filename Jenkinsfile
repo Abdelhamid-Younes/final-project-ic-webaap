@@ -120,6 +120,16 @@ pipeline {
                         echo "$AWS_PRIVATE_KEY" > devops-hamid.pem
                         chmod 400 devops-hamid.pem
 
+                        cd "/var/jenkins_home/workspace/ic-webapp"
+                        echo "Cleaning up old files"
+                        rm -f id_rsa
+
+                        echo "Copying SSH private key for Ansible"
+                        echo $PRIVATE_KEY > id_rsa
+                        chmod 600 id_rsa
+
+
+
                         echo "Initializing Terraform"
                         cd "./sources/terraform/dev"
                         terraform init -input=false
@@ -133,21 +143,12 @@ pipeline {
                         echo "Applying Terraform plan"
                         terraform apply -input=false -auto-approve tfplan
 
-                        echo "Current working directory:"
-                        pwd
-                        ls
                         cat files/ec2_IP.txt
 
                         echo "Generating host_vars for EC2 servers"
-                        echo "ansible_host: $(awk '{print $2}' /var/jenkins_home/workspace/ic-webapp/sources/terraform/dev/files/ec2_IP.txt)" > /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
+                        echo "ansible_host: $(awk '{print $2}' /files/ec2_IP.txt)" > var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
 
-                        cd "/var/jenkins_home/workspace/ic-webapp"
-                        echo "Cleaning up old files"
-                        rm -f id_rsa
-
-                        echo "Copying SSH private key for Ansible"
-                        echo $PRIVATE_KEY > id_rsa
-                        chmod 600 id_rsa
+                        cat var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
 
                     '''                   
                 }
