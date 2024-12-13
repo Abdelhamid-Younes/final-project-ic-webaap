@@ -147,15 +147,27 @@ pipeline {
 
                         pwd
 
-                        echo "Generating host_vars for EC2 servers"
-                        echo "ansible_host: $(awk '{print $2}' ./files/ec2_IP.txt)" > var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
 
-                        cat var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
+
+                        mkdir -p /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars
+
+                        echo "Generating host_vars for EC2 servers"
+                        echo "ansible_host: $(awk '{print $2}' ./files/ec2_IP.txt)" > /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
+
+                        echo "Displaying host_vars content"
+                        cat /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
+
 
                     '''                   
                 }
             }
         }
+                             /*   echo "Generating host_vars for EC2 servers"
+                        echo "ansible_host: $(awk '{print $2}' ./files/ec2_IP.txt)" > var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
+
+                        cat var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
+
+                        echo "Ensuring host_vars directory exists" */
 
         stage('Ping dev server') {
             agent {
