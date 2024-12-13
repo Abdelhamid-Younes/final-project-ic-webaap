@@ -157,15 +157,10 @@ pipeline {
                         echo "Displaying host_vars content"
                         cat /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
                         
-
                     ''' 
-                    timeout(time: 3, unit: "MINUTES") {
+                    timeout(time: 5, unit: "MINUTES") {
                         input message: "Confirmer vous la suppression de la dev dans AWS ?", ok: 'Yes'
-                    } 
-                    sh'''
-                        cd "./sources/terraform/dev"
-                        terraform destroy --auto-approve
-                    ''' 
+                    }
                 }
             }
         }
@@ -192,6 +187,14 @@ pipeline {
                         export ANSIBLE_CONFIG=$PWD/ansible.cfg
                         ansible -i source/ansible/inventory/hosts.yml dev -m ping --private-key devops-hamid.pem 
                     '''
+
+                    timeout(time: 10, unit: "MINUTES") {
+                        input message: "Confirmer vous la suppression de la dev dans AWS ?", ok: 'Yes'
+                    } 
+                    sh'''
+                        cd "./sources/terraform/dev"
+                        terraform destroy --auto-approve
+                    ''' 
                 }
             }
         }
