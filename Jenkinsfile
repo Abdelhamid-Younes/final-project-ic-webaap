@@ -188,27 +188,13 @@ pipeline {
                         export ANSIBLE_CONFIG=$PWD/ansible.cfg
                         ansible -i source/ansible/inventory/hosts.yml dev -m ping --private-key devops-hamid.pem 
                     '''
-                }
-            }
-        }
-
-        stage ("Delete Dev environment") {
-            agent { docker { image 'jenkins/jnlp-agent-terraform'  } }
-            environment {
-                AWS_ACCESS_KEY_ID = credentials('aws_access_key_id')
-                AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
-                PRIVATE_AWS_KEY = credentials('private_aws_key')
-            }
-            steps {
-                script {       
-
-                    timeout(time: 20, unit: "MINUTES") {
+                    timeout(time: 10, unit: "MINUTES") {
                         input message: "Confirmer vous la suppression de la dev dans AWS ?", ok: 'Yes'
                     } 
                     sh'''
                         cd "./sources/terraform/dev"
                         terraform destroy --auto-approve
-                    '''                             
+                    ''' 
                 }
             }
         } 
