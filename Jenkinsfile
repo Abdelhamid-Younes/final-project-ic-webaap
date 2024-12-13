@@ -42,6 +42,7 @@ pipeline {
         stage('Run container based on built image'){
             agent any
             steps {
+                unstash 'workspace-stash'
                 script{
                     sh '''
 
@@ -57,6 +58,7 @@ pipeline {
         stage('Test image') {
             agent any
             steps{
+                unstash 'workspace-stash'
                 script {
                     sh 'docker stop ${IMAGE_NAME} || true && docker rm ${IMAGE_NAME} || true'
                     sh 'docker run --name $IMAGE_NAME -d -p $APP_EXPOSED_PORT:$INTERNAL_PORT ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG'
@@ -70,6 +72,7 @@ pipeline {
         stage('Clean container') {
             agent any
             steps{
+                unstash 'workspace-stash'
                 script {
                     sh '''
                         docker stop $IMAGE_NAME
@@ -84,6 +87,7 @@ pipeline {
             }
             agent any
             steps{
+                unstash 'workspace-stash'
                 script {
                     sh '''
                         echo $DOCKERHUB_PSW | docker login -u $DOCKERHUB_USR --password-stdin
@@ -93,6 +97,7 @@ pipeline {
             }
         }
 */
+
         stage('Provision EC2 on AWS with Terraform') {
             agent { 
                 docker { 
@@ -105,6 +110,7 @@ pipeline {
                 AWS_PRIVATE_KEY = credentials('aws_private_key')
             }
             steps {
+                unstash 'workspace-stash'
                 script {
                     sh '''
                         echo "Setting up AWS credentials"
@@ -164,12 +170,6 @@ pipeline {
                 }
             }
         }
-                             /*   echo "Generating host_vars for EC2 servers"
-                        echo "ansible_host: $(awk '{print $2}' ./files/ec2_IP.txt)" > var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
-
-                        cat var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
-
-                        echo "Ensuring host_vars directory exists" */
 
         stage('Ping dev server') {
             agent {
@@ -178,6 +178,7 @@ pipeline {
                 }
             }
             steps {
+                unstash 'workspace-stash'
                 script {
                     sh '''
                         apt update -y
@@ -198,42 +199,6 @@ pipeline {
                 }
             }
         }
-
-        /*stage('Deploy application') {
-            steps {
-                script {
-                    sh '''
-                        export ANSIBLE_CONFIG=$PWD/ansible.cfg
-                        ansible-playbook playbooks/icwebapp.yml --private_key private_key
-                    '''
-                }
-            }
-        }*/
-        
-        /*stage ('Update Ansible host_vars with EC2 IP'){
-            agent any 
-            steps {
-                script {
-                    sh '''
-
-                        echo "Cleaning up old files"
-                        rm -f id_rsa
-
-                        echo "Copying SSH private key for Ansible"
-                        echo $PRIVATE_KEY > id_rsa
-                        chmod 600 id_rsa
-
-                    '''
-                    timeout(time: 3, unit: "MINUTES") {
-                        input message: "Confirmer vous la suppression de la dev dans AWS ?", ok: 'Yes'
-                    } 
-                    sh'''
-                        cd "./sources/terraform/dev"
-                        terraform destroy --auto-approve
-                    '''  
-                }
-            }
-        }*/
 
     }
   post {
