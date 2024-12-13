@@ -186,7 +186,7 @@ pipeline {
                         pwd
 
                         export ANSIBLE_CONFIG=$PWD/ansible.cfg
-                        ansible -i source/ansible/inventory/hosts.yml dev -m ping --private-key devops-hamid.pem 
+                        ansible -i sources/ansible/inventory/hosts.yml dev -m ping --private-key devops-hamid.pem 
                     '''
                     timeout(time: 10, unit: "MINUTES") {
                         input message: "Confirmer vous la suppression de la dev dans AWS ?", ok: 'Yes'
