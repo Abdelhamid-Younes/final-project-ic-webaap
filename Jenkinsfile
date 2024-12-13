@@ -110,7 +110,6 @@ pipeline {
                 AWS_PRIVATE_KEY = credentials('aws_private_key')
             }
             steps {
-                unstash 'workspace-stash'
                 script {
                     sh '''
                         echo "Setting up AWS credentials"
@@ -168,6 +167,7 @@ pipeline {
                         input message: "Confirmer vous la suppression de la dev dans AWS ?", ok: 'Yes'
                     }
                 }
+                stash includes: '**/*', name: 'workspace-stash'
             }
         }
 
