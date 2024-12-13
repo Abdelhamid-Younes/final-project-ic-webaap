@@ -156,9 +156,16 @@ pipeline {
 
                         echo "Displaying host_vars content"
                         cat /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
+                        
 
-
-                    '''                   
+                    ''' 
+                    timeout(time: 3, unit: "MINUTES") {
+                        input message: "Confirmer vous la suppression de la dev dans AWS ?", ok: 'Yes'
+                    } 
+                    sh'''
+                        cd "./sources/terraform/dev"
+                        terraform destroy --auto-approve
+                    ''' 
                 }
             }
         }
