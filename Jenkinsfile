@@ -131,7 +131,7 @@ pipeline {
                         chmod 600 id_rsa
 
                         echo "Configuring AWS private key"
-                        echo "$AWS_PRIVATE_KEY" > devops-hamid.pem
+                        echo $AWS_PRIVATE_KEY > devops-hamid.pem
                         chmod 600 devops-hamid.pem
 
 
