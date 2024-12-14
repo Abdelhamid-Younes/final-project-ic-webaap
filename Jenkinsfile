@@ -163,7 +163,7 @@ pipeline {
                         cat /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
                         
                     ''' 
-                    timeout(time: 5, unit: "MINUTES") {
+                    timeout(time: 15, unit: "MINUTES") {
                         input message: "wait for a moment to check files ?", ok: 'Yes'
                     }
                 }
