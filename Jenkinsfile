@@ -164,7 +164,7 @@ pipeline {
                         
                     ''' 
                     timeout(time: 5, unit: "MINUTES") {
-                        input message: "Confirmer vous la suppression de la dev dans AWS ?", ok: 'Yes'
+                        input message: "wait for a moment to check files ?", ok: 'Yes'
                     }
                 }
                 stash includes: '**/*', name: 'workspace-stash'
@@ -186,7 +186,7 @@ pipeline {
                         pwd
 
                         export ANSIBLE_CONFIG=$PWD/ansible.cfg
-                        ansible -i sources/ansible/inventory/hosts.yml dev -m ping --private-key devops-hamid.pem 
+                        ansible dev -m ping --private-key devops-hamid.pem 
                     '''
                 }
             }
