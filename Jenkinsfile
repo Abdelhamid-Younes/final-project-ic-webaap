@@ -183,12 +183,10 @@ pipeline {
                     sh '''
                         apt update -y
                         apt install sshpass -y
-
-                        cd "./sources/ansible" 
                         pwd
 
                         export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
-                        ansible all -m ping --private-key devops-hamid.pem -vvv
+                        ansible dev-server -m ping --private-key devops-hamid.pem -vvv
                     '''
                 }
             }
@@ -201,6 +199,7 @@ pipeline {
                 }
             }
             steps {
+                unstash 'workspace-stash'
                 script {
                     timeout(time: 10, unit: "MINUTES") {
                         input message: "Confirmer vous la suppression de la dev dans AWS ?", ok: 'Yes'
