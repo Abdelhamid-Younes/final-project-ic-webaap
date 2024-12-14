@@ -6,3 +6,6 @@
 
 # Ignore ec2_ip file
 ec2_ip*
+
+# Ignore ssh key
+*.pem
