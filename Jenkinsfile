@@ -124,10 +124,15 @@ pipeline {
                         cd "/var/jenkins_home/workspace/ic-webapp"
                         echo "Cleaning up old files"
                         rm -f id_rsa
+                        rm -f devops-hamid.pem
 
                         echo "Copying SSH private key for Ansible"
                         echo $PRIVATE_KEY > id_rsa
                         chmod 600 id_rsa
+
+                        echo "Configuring AWS private key"
+                        echo "$AWS_PRIVATE_KEY" > devops-hamid.pem
+                        chmod 600 devops-hamid.pem
 
 
 
@@ -178,9 +183,6 @@ pipeline {
                 script {
                     sh '''
 
-                        echo "Configuring AWS private key"
-                        echo "$AWS_PRIVATE_KEY" > devops-hamid.pem
-                        chmod 600 devops-hamid.pem
 
                         apt update -y
                         apt install sshpass -y
