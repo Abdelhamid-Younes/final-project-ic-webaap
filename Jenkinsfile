@@ -188,6 +188,18 @@ pipeline {
                         export ANSIBLE_CONFIG=$PWD/ansible.cfg
                         ansible -i sources/ansible/inventory/hosts.yml dev -m ping --private-key devops-hamid.pem 
                     '''
+                }
+            }
+        }
+
+        stage('delete dev environment') {
+            agent {
+                docker { 
+                    image 'jenkins/jnlp-agent-terraform'  
+                } 
+            }
+            steps {
+                script {
                     timeout(time: 10, unit: "MINUTES") {
                         input message: "Confirmer vous la suppression de la dev dans AWS ?", ok: 'Yes'
                     } 
@@ -197,7 +209,7 @@ pipeline {
                     ''' 
                 }
             }
-        } 
+        }  
 
     }
   post {
