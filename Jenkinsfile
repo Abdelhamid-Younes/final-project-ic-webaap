@@ -121,10 +121,6 @@ pipeline {
                         echo "aws_secret_access_key=$AWS_SECRET_KEY" >> ~/.aws/credentials
                         chmod 600 ~/.aws/credentials
 
-                        echo "Configuring AWS private key"
-                        echo "$AWS_PRIVATE_KEY" > devops-hamid.pem
-                        chmod 400 devops-hamid.pem
-
                         cd "/var/jenkins_home/workspace/ic-webapp"
                         echo "Cleaning up old files"
                         rm -f id_rsa
@@ -181,6 +177,11 @@ pipeline {
                 unstash 'workspace-stash'
                 script {
                     sh '''
+
+                        echo "Configuring AWS private key"
+                        echo "$AWS_PRIVATE_KEY" > devops-hamid.pem
+                        chmod 600 devops-hamid.pem
+
                         apt update -y
                         apt install sshpass -y
                         pwd
