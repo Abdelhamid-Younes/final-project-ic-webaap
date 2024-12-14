@@ -186,7 +186,7 @@ pipeline {
                         pwd
 
                         export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
-                        ansible dev -m ping --private-key devops-hamid.pem -o
+                        ansible all -m ping --private-key devops-hamid.pem -vvv
                     '''
                 }
             }
