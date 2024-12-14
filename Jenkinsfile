@@ -135,8 +135,7 @@ pipeline {
                         chmod 600 devops-hamid.pem
                         cat devops-hamid.pem
 
-
-
+                        echo "/n"
                         echo "Initializing Terraform"
                         cd "./sources/terraform/dev"
                         terraform init -input=false
