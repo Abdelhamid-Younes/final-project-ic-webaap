@@ -183,6 +183,8 @@ pipeline {
                     sh '''
                         apt update -y
                         apt install sshpass -y
+
+                        cd "./sources/ansible" 
                         pwd
 
                         export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
@@ -196,17 +198,17 @@ pipeline {
             agent {
                 docker { 
                     image 'jenkins/jnlp-agent-terraform'  
-                } 
+                }
             }
             steps {
                 script {
                     timeout(time: 10, unit: "MINUTES") {
                         input message: "Confirmer vous la suppression de la dev dans AWS ?", ok: 'Yes'
-                    } 
+                    }
                     sh'''
                         cd "./sources/terraform/dev"
                         terraform destroy --auto-approve
-                    ''' 
+                    '''
                 }
             }
         }  
