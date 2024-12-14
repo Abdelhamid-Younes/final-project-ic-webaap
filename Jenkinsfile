@@ -185,8 +185,8 @@ pipeline {
                         apt install sshpass -y
                         pwd
 
-                        export ANSIBLE_CONFIG=$PWD/ansible.cfg
-                        ansible dev -m ping --private-key devops-hamid.pem 
+                        export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
+                        ansible dev -m ping --private-key devops-hamid.pem -o
                     '''
                 }
             }
