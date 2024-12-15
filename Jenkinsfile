@@ -201,13 +201,30 @@ pipeline {
                     image 'jenkins/jnlp-agent-terraform'  
                 }
             }
+
+            environment {
+                AWS_ACCESS_KEY = credentials('aws_access_key')
+                AWS_SECRET_KEY = credentials('aws_secret_key')
+                AWS_PRIVATE_KEY = credentials('aws_private_key')
+            }
+
             steps {
                 unstash 'workspace-stash'
                 script {
                     timeout(time: 10, unit: "MINUTES") {
-                        input message: "Confirmer vous la suppression de la dev dans AWS ?", ok: 'Yes'
+                        input message: "Do you confirm deleting aws ec2 ?", ok: 'Yes'
                     }
                     sh'''
+
+                        echo "Setting up AWS credentials"
+                        rm -rf devops-hamid.pem ~/.aws || true
+                        mkdir -p ~/.aws
+
+                        echo "[default]" > ~/.aws/credentials
+                        echo "aws_access_key_id=$AWS_ACCESS_KEY" >> ~/.aws/credentials
+                        echo "aws_secret_access_key=$AWS_SECRET_KEY" >> ~/.aws/credentials
+                        chmod 600 ~/.aws/credentials
+                        
                         cd "./sources/terraform/dev"
                         terraform destroy --auto-approve
                     '''
