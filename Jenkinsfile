@@ -172,28 +172,50 @@ pipeline {
             }
         }
 
-        stage('Ping dev server') {
+        stage('Deploy application with ansible') {
             agent {
                 docker {
                     image 'registry.gitlab.com/robconnolly/docker-ansible:latest'
                 }
             }
-            steps {
-                unstash 'workspace-stash'
-                script {
-                    sh '''
+            stages {
+                stage ('Ping dev server'){
+                    steps {
+                        unstash 'workspace-stash'
+                        script {
+                            sh '''
 
 
-                        apt update -y
-                        apt install sshpass -y
-                        pwd
+                                apt update -y
+                                apt install sshpass -y
+                                pwd
 
-                        export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
-                        ansible dev-server -m ping --private-key devops-hamid.pem -vvv
-                    '''
+                                export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
+                                ansible dev-server -m ping --private-key devops-hamid.pem -vvv
+                            '''
+                        }
+                    }
+                }
+                stage ('Install Docker on aws ec2'){
+                    steps {
+                        unstash 'workspace-stash'
+                        script {
+                            sh '''
+                                pwd
+
+
+                                export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
+                                ansible-playbook sources/ansible-ressources/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l dev
+
+                            '''
+                        }
+                    }
                 }
             }
+
+
         }
+
 
         stage('delete dev environment') {
             agent {
@@ -224,7 +246,7 @@ pipeline {
                         echo "aws_access_key_id=$AWS_ACCESS_KEY" >> ~/.aws/credentials
                         echo "aws_secret_access_key=$AWS_SECRET_KEY" >> ~/.aws/credentials
                         chmod 600 ~/.aws/credentials
-                        
+
                         cd "./sources/terraform/dev"
                         terraform destroy --auto-approve
                     '''
