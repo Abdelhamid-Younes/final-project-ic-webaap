@@ -205,7 +205,7 @@ pipeline {
 
 
                                 export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible-ressources/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l dev
+                                ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l dev
 
                             '''
                         }
