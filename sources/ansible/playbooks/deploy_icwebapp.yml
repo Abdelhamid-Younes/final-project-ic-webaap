@@ -1,6 +1,6 @@
 ---
 - name: Deploy ic-webapp onLinux VM
-  hosts: dev
+  hosts: all
   become: yes
   gather_facts: yes
   roles:

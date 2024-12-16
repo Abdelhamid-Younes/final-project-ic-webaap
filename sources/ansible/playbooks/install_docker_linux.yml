@@ -1,6 +1,6 @@
 ---
 - name: Install Docker on Linux VM
-  hosts: dev
+  hosts: dev:prod
   become: yes
   gather_facts: yes
   roles:

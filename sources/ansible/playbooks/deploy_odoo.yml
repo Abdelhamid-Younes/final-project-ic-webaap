@@ -1,6 +1,6 @@
 ---
 - name: Deploy odoo Linux VM
-  hosts: dev
+  hosts: all
   become: yes
   gather_facts: yes
   roles:
