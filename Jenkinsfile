@@ -134,33 +134,29 @@ pipeline {
                         cp $AWS_PRIVATE_KEY devops-hamid.pem
                         chmod 600 devops-hamid.pem
                         #cat devops-hamid.pem
+                    '''
+                    // sh '''
+                    //     echo "Initializing Terraform"
+                    //     cd "./sources/terraform/dev"
+                    //     terraform init -input=false
 
-                        echo "Initializing Terraform"
-                        #cd "./sources/terraform/dev"
-                        #terraform init -input=false
+                    //     echo "Validating Terraform configuration"
+                    //     terraform validate
 
-                        echo "Validating Terraform configuration"
-                        #terraform validate
+                    //     echo "Generating Terraform plan"
+                    //     terraform plan -out=tfplan
 
-                        echo "Generating Terraform plan"
-                        #terraform plan -out=tfplan
+                    //     echo "Applying Terraform plan"
+                    //     terraform apply -input=false -auto-approve tfplan
 
-                        echo "Applying Terraform plan"
-                        #terraform apply -input=false -auto-approve tfplan
+                    //     #mkdir -p /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars
 
-                        #cat files/ec2_IP.txt
+                    //     echo "Generating host_vars for EC2 dev-server"
+                    //     echo "ansible_host: $(awk '{print $2}' ./files/ec2_IP.txt)" > /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
 
-                        #pwd
-
-                        #mkdir -p /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars
-
-                        #echo "Generating host_vars for EC2 dev-server"
-                        #echo "ansible_host: $(awk '{print $2}' ./files/ec2_IP.txt)" > /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
-
-                        echo "Displaying host_vars content"
-                        #cat /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
-                        
-                    ''' 
+                    //     echo "Displaying host_vars content"
+                    //     cat /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
+                    // ''' 
                     // timeout(time: 15, unit: "MINUTES") {
                     //     input message: "wait for a moment to check files ?", ok: 'Yes'
                     // }
@@ -262,7 +258,7 @@ pipeline {
                         
                     ''' 
                 }
-                stash includes: '**/*', name: 'workspace-prod-stash'
+            //    stash includes: '**/*', name: 'workspace-prod-stash'
             }
         }
 
@@ -275,7 +271,7 @@ pipeline {
             stages {
                 stage ('Ping PROD server'){
                     steps {
-                        unstash 'workspace-prod-stash'
+                        unstash 'workspace-stash'
                         script {
                             sh '''
                                 apt update -y
@@ -290,16 +286,22 @@ pipeline {
                 }
                 stage ('Install Docker and Deploy applications on aws PROD environment'){
                     steps {
-                        unstash 'workspace-prod-stash'
+                        unstash 'workspace-stash'
                         script {
                             sh '''
-                                pwd
-
                                 export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
                                 ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l prod
-                                ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l prod
-                                ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l prod
-                                ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l prod
+                                #ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l prod
+                                #ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l prod
+                                #ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l prod
+                            '''
+                            timeout(time: 15, unit: "MINUTES") {
+                                input message: "Do you confirm deleting aws ec2 ?", ok: 'Yes'
+                            }
+                            //Delete PROD environment
+                            sh'''
+                                cd "./sources/terraform/prod"
+                                terraform destroy --auto-approve
                             '''
                         }
                     }
