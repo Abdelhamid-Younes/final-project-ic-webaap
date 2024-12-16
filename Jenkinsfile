@@ -285,7 +285,7 @@ pipeline {
                                 pwd
 
                                 export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
-                                ansible prod-server -m ping --private-key devops-hamid.pem
+                                ansible prod-server -m ping --private-key devops-hamid.pem -vvv
                             '''
                         }
                     }
@@ -298,7 +298,7 @@ pipeline {
                                 pwd
 
                                 export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l prod
+                                ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l prod -vvv
                                 ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l prod
                                 ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l prod
                                 ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l prod
