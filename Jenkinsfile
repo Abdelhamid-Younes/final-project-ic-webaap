@@ -258,7 +258,7 @@ pipeline {
                         
                     ''' 
                 }
-            //    stash includes: '**/*', name: 'workspace-prod-stash'
+                stash includes: '**/*', name: 'workspace-prod-stash'
             }
         }
 
@@ -271,7 +271,7 @@ pipeline {
             stages {
                 stage ('Ping PROD server'){
                     steps {
-                        unstash 'workspace-stash'
+                        unstash 'workspace-prod-stash'
                         script {
                             sh '''
                                 apt update -y
@@ -286,7 +286,7 @@ pipeline {
                 }
                 stage ('Install Docker and Deploy applications on aws PROD environment'){
                     steps {
-                        unstash 'workspace-stash'
+                        unstash 'workspace-prod-stash'
                         script {
                             sh '''
                                 export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
