@@ -150,7 +150,7 @@ pipeline {
 
                     ''' 
                 }
-                stash includes: 'sources/ansible/**, devops-hamid.pem', name: 'workspace-stash'
+                stash includes: 'sources/**, devops-hamid.pem', name: 'workspace-stash'
                 //stash includes: '**/*', name: 'workspace-stash'
             }
         }
