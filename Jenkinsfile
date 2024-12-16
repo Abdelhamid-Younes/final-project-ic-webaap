@@ -224,11 +224,11 @@ pipeline {
                 }
             }
 
-            // environment {
-            //     AWS_ACCESS_KEY = credentials('aws_access_key')
-            //     AWS_SECRET_KEY = credentials('aws_secret_key')
-            //     AWS_PRIVATE_KEY = credentials('aws_private_key')
-            // }
+            environment {
+                AWS_ACCESS_KEY = credentials('aws_access_key')
+                AWS_SECRET_KEY = credentials('aws_secret_key')
+                AWS_PRIVATE_KEY = credentials('aws_private_key')
+            }
 
             steps {
                 unstash 'workspace-stash'
