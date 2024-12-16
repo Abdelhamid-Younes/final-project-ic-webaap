@@ -129,6 +129,8 @@ pipeline {
                         cp $AWS_PRIVATE_KEY devops-hamid.pem
                         chmod 600 devops-hamid.pem
                     '''
+
+                    // Create Dev environment
                     sh '''
                         echo "Initializing Terraform"
                         cd "./sources/terraform/dev"
@@ -147,9 +149,6 @@ pipeline {
                         echo "ansible_host: $(awk '{print $2}' ./files/ec2_IP.txt)" > /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
 
                     ''' 
-                    timeout(time: 15, unit: "MINUTES") {
-                        input message: "wait for a moment to check files ?", ok: 'Yes'
-                    }
                 }
                 stash includes: '**/*', name: 'workspace-stash'
             }
@@ -211,9 +210,12 @@ pipeline {
             steps {
                 unstash 'workspace-stash'
                 script {
-                    timeout(time: 10, unit: "MINUTES") {
-                        input message: "Do you confirm deleting aws ec2 ?", ok: 'Yes'
-                    }
+                    // timeout(time: 10, unit: "MINUTES") {
+                    //     input message: "Do you confirm deleting aws ec2 ?", ok: 'Yes'
+                    // }
+                    
+                    input message: "Do you confirm deleting aws DEV environment ?", ok: 'yes'
+
                     // Delete DEV environment
                     sh'''
                         cd "./sources/terraform/dev"
