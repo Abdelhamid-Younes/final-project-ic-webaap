@@ -123,17 +123,11 @@ pipeline {
 
                         cd "/var/jenkins_home/workspace/ic-webapp"
                         echo "Cleaning up old files"
-                        #rm -f id_rsa
                         rm -f devops-hamid.pem
-
-                        #echo "Copying SSH private key for Ansible"
-                        #echo $PRIVATE_KEY > id_rsa
-                        #chmod 600 id_rsa
 
                         echo "Configuring AWS private key"
                         cp $AWS_PRIVATE_KEY devops-hamid.pem
                         chmod 600 devops-hamid.pem
-                        #cat devops-hamid.pem
                     '''
                     sh '''
                         echo "Initializing Terraform"
@@ -149,13 +143,9 @@ pipeline {
                         echo "Applying Terraform plan"
                         terraform apply -input=false -auto-approve tfplan
 
-                        #mkdir -p /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars
-
                         echo "Generating host_vars for EC2 dev-server"
                         echo "ansible_host: $(awk '{print $2}' ./files/ec2_IP.txt)" > /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
 
-                        echo "Displaying host_vars content"
-                        cat /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
                     ''' 
                     timeout(time: 15, unit: "MINUTES") {
                         input message: "wait for a moment to check files ?", ok: 'Yes'
@@ -177,11 +167,8 @@ pipeline {
                         unstash 'workspace-stash'
                         script {
                             sh '''
-
-
                                 apt update -y
                                 apt install sshpass -y
-                                pwd
 
                                 export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
                                 ansible dev-server -m ping --private-key devops-hamid.pem
@@ -189,24 +176,22 @@ pipeline {
                         }
                     }
                 }
-                stage ('Install Docker and Deploy applications on aws DEV environment'){
-                    steps {
-                        unstash 'workspace-stash'
-                        script {
-                            sh '''
-                                pwd
-                                
-                                export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l dev
-                                #ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l dev
-                                #ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l dev
-                                #ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l dev
+                // stage ('Install Docker and Deploy applications on aws DEV environment'){
+                //     steps {
+                //         unstash 'workspace-stash'
+                //         script {
+                //             sh '''
+                //                 export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
+                //                 ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l dev
+                //                 #ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l dev
+                //                 #ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l dev
+                //                 #ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l dev
 
 
-                            '''
-                        }
-                    }
-                }
+                //             '''
+                //         }
+                //     }
+                // }
             }
         }
 
