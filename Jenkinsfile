@@ -288,29 +288,30 @@ pipeline {
 
                                 export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
                                 ansible prod-server -m ping --private-key devops-hamid.pem
-                            '''
-                        }
-                    }
-                }
-                stage ('Install Docker and Deploy applications on aws PROD environment'){
-                    steps {
-                        unstash 'workspace-prod-stash'
-                        script {
-                            sh '''
-                                pwd
-
-
-                                export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
                                 ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l prod
-                                #ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l prod
-                                #ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l prod
-                                #ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l prod
-
 
                             '''
                         }
                     }
                 }
+                // stage ('Install Docker and Deploy applications on aws PROD environment'){
+                //     steps {
+                //         unstash 'workspace-prod-stash'
+                //         script {
+                //             sh '''
+                //                 pwd
+
+                //                 export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
+                //                 ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l prod
+                //                 #ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l prod
+                //                 #ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l prod
+                //                 #ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l prod
+
+
+                //             '''
+                //         }
+                //     }
+                // }
             }
         }
 
