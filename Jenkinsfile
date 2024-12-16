@@ -29,68 +29,68 @@ pipeline {
         //     }
         // }
 
-        stage('Build image') {
-            agent any
-            steps {
-                script {
-                    sh 'docker build -t ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG .'
-                }
-            }
-        }
+        // stage('Build image') {
+        //     agent any
+        //     steps {
+        //         script {
+        //             sh 'docker build -t ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG .'
+        //         }
+        //     }
+        // }
 
-        stage('Run container based on built image'){
-            agent any
-            steps {
-                script{
-                    sh '''
+        // stage('Run container based on built image'){
+        //     agent any
+        //     steps {
+        //         script{
+        //             sh '''
 
-                        echo "Cleaning existing container if exists"
-                        docker ps -a | grep -i $IMAGE_NAME && docker rm -f $IMAGE_NAME
-                        docker run --name $IMAGE_NAME -d -p $APP_EXPOSED_PORT:$INTERNAL_PORT ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG
-                        sleep 5
-                    '''
-                }
-            }
-        }
+        //                 echo "Cleaning existing container if exists"
+        //                 docker ps -a | grep -i $IMAGE_NAME && docker rm -f $IMAGE_NAME
+        //                 docker run --name $IMAGE_NAME -d -p $APP_EXPOSED_PORT:$INTERNAL_PORT ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG
+        //                 sleep 5
+        //             '''
+        //         }
+        //     }
+        // }
 
-        stage('Test image') {
-            agent any
-            steps{
-                script {
-                    sh 'docker stop ${IMAGE_NAME} || true && docker rm ${IMAGE_NAME} || true'
-                    sh 'docker run --name $IMAGE_NAME -d -p $APP_EXPOSED_PORT:$INTERNAL_PORT ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG'
-                    sh 'sleep 5'
-                    sh 'curl -k http://172.17.0.1:$APP_EXPOSED_PORT | grep -i "IC GROUP"'
-                    sh 'if [ $? -eq 0 ]; then echo "Acceptance test succeeded"; fi'
-                }
-            }
-        }
+        // stage('Test image') {
+        //     agent any
+        //     steps{
+        //         script {
+        //             sh 'docker stop ${IMAGE_NAME} || true && docker rm ${IMAGE_NAME} || true'
+        //             sh 'docker run --name $IMAGE_NAME -d -p $APP_EXPOSED_PORT:$INTERNAL_PORT ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG'
+        //             sh 'sleep 5'
+        //             sh 'curl -k http://172.17.0.1:$APP_EXPOSED_PORT | grep -i "IC GROUP"'
+        //             sh 'if [ $? -eq 0 ]; then echo "Acceptance test succeeded"; fi'
+        //         }
+        //     }
+        // }
 
-        stage('Clean container') {
-            agent any
-            steps{
-                script {
-                    sh '''
-                        docker stop $IMAGE_NAME
-                        docker rm $IMAGE_NAME
-                    '''
-                }
-            }
-        }
-        stage('Login and Push Image on Docker Hub') {
-            when{
-                expression {GIT_BRANCH == 'origin/main'}
-            }
-            agent any
-            steps{
-                script {
-                    sh '''
-                        echo $DOCKERHUB_PSW | docker login -u $DOCKERHUB_USR --password-stdin
-                        docker push $DOCKERHUB_USR/$IMAGE_NAME:$IMAGE_TAG
-                    '''
-                }
-            }
-        }
+        // stage('Clean container') {
+        //     agent any
+        //     steps{
+        //         script {
+        //             sh '''
+        //                 docker stop $IMAGE_NAME
+        //                 docker rm $IMAGE_NAME
+        //             '''
+        //         }
+        //     }
+        // }
+        // stage('Login and Push Image on Docker Hub') {
+        //     when{
+        //         expression {GIT_BRANCH == 'origin/main'}
+        //     }
+        //     agent any
+        //     steps{
+        //         script {
+        //             sh '''
+        //                 echo $DOCKERHUB_PSW | docker login -u $DOCKERHUB_USR --password-stdin
+        //                 docker push $DOCKERHUB_USR/$IMAGE_NAME:$IMAGE_TAG
+        //             '''
+        //         }
+        //     }
+        // }
 
 
         stage('Provision DEV environment on AWS with Terraform') {
@@ -205,7 +205,7 @@ pipeline {
             steps {
                 unstash 'workspace-stash'
                 script {
-                                       
+
                     input message: "Do you confirm deleting AWS DEV environment ?", ok: 'Yes'
 
                     // Delete DEV environment
