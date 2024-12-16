@@ -169,53 +169,53 @@ pipeline {
             }
         }
 
-        stage('Deploy application on DEV environment with ansible') {
-            agent {
-                docker {
-                    image 'registry.gitlab.com/robconnolly/docker-ansible:latest'
-                }
-            }
-            stages {
-                stage ('Ping dev server'){
-                    steps {
-                        unstash 'workspace-stash'
-                        script {
-                            sh '''
+        // stage('Deploy application on DEV environment with ansible') {
+        //     agent {
+        //         docker {
+        //             image 'registry.gitlab.com/robconnolly/docker-ansible:latest'
+        //         }
+        //     }
+        //     stages {
+        //         stage ('Ping dev server'){
+        //             steps {
+        //                 unstash 'workspace-stash'
+        //                 script {
+        //                     sh '''
 
 
-                                apt update -y
-                                apt install sshpass -y
-                                pwd
+        //                         apt update -y
+        //                         apt install sshpass -y
+        //                         pwd
 
-                                export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
-                                ansible dev-server -m ping --private-key devops-hamid.pem
-                            '''
-                        }
-                    }
-                }
-                stage ('Install Docker and Deploy applications on aws DEV environment'){
-                    steps {
-                        unstash 'workspace-stash'
-                        script {
-                            sh '''
-                                pwd
-
-
-                                export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l dev
-                                #ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l dev
-                                #ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l dev
-                                #ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l dev
+        //                         export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
+        //                         ansible dev-server -m ping --private-key devops-hamid.pem
+        //                     '''
+        //                 }
+        //             }
+        //         }
+        //         stage ('Install Docker and Deploy applications on aws DEV environment'){
+        //             steps {
+        //                 unstash 'workspace-stash'
+        //                 script {
+        //                     sh '''
+        //                         pwd
 
 
-                            '''
-                        }
-                    }
-                }
-            }
+        //                         export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
+        //                         ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l dev
+        //                         #ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l dev
+        //                         #ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l dev
+        //                         #ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l dev
 
 
-        }
+        //                     '''
+        //                 }
+        //             }
+        //         }
+        //     }
+
+
+        // }
 
         stage('Delete DEV environment And create PROD one') {
             agent {
