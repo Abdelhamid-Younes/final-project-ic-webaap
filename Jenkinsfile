@@ -4,7 +4,6 @@ pipeline {
     environment {
 
         IMAGE_NAME = "${PARAM_IMAGE_NAME}"                    /*ic-webapp*/
-        //APP_NAME = "${PARAM_APP_NAME}"                        
         IMAGE_TAG = "${PARAM_IMAGE_TAG}"                      /*1.0*/
         APP_EXPOSED_PORT = "${PARAM_EXPOSED_PORT}"            /*8000 by default*/
         INTERNAL_PORT = "${PARAM_INTERNAL_PORT}"              /*8000 by default*/
@@ -30,72 +29,68 @@ pipeline {
         //     }
         // }
 
-        // stage('Build image') {
-        //     agent any
-        //     steps {
-        //         script {
-        //             sh 'docker build -t ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG .'
-        //         }
-        //     }
-        // }
+        stage('Build image') {
+            agent any
+            steps {
+                script {
+                    sh 'docker build -t ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG .'
+                }
+            }
+        }
 
-        // stage('Run container based on built image'){
-        //     agent any
-        //     steps {
-        //         unstash 'workspace-stash'
-        //         script{
-        //             sh '''
+        stage('Run container based on built image'){
+            agent any
+            steps {
+                script{
+                    sh '''
 
-        //                 echo "Cleaning existing container if exists"
-        //                 docker ps -a | grep -i $IMAGE_NAME && docker rm -f $IMAGE_NAME
-        //                 docker run --name $IMAGE_NAME -d -p $APP_EXPOSED_PORT:$INTERNAL_PORT ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG
-        //                 sleep 5
-        //             '''
-        //         }
-        //     }
-        // }
+                        echo "Cleaning existing container if exists"
+                        docker ps -a | grep -i $IMAGE_NAME && docker rm -f $IMAGE_NAME
+                        docker run --name $IMAGE_NAME -d -p $APP_EXPOSED_PORT:$INTERNAL_PORT ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG
+                        sleep 5
+                    '''
+                }
+            }
+        }
 
-        // stage('Test image') {
-        //     agent any
-        //     steps{
-        //         unstash 'workspace-stash'
-        //         script {
-        //             sh 'docker stop ${IMAGE_NAME} || true && docker rm ${IMAGE_NAME} || true'
-        //             sh 'docker run --name $IMAGE_NAME -d -p $APP_EXPOSED_PORT:$INTERNAL_PORT ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG'
-        //             sh 'sleep 5'
-        //             sh 'curl -k http://172.17.0.1:$APP_EXPOSED_PORT | grep -i "IC GROUP"'
-        //             sh 'if [ $? -eq 0 ]; then echo "Acceptance test succeeded"; fi'
-        //         }
-        //     }
-        // }
+        stage('Test image') {
+            agent any
+            steps{
+                script {
+                    sh 'docker stop ${IMAGE_NAME} || true && docker rm ${IMAGE_NAME} || true'
+                    sh 'docker run --name $IMAGE_NAME -d -p $APP_EXPOSED_PORT:$INTERNAL_PORT ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG'
+                    sh 'sleep 5'
+                    sh 'curl -k http://172.17.0.1:$APP_EXPOSED_PORT | grep -i "IC GROUP"'
+                    sh 'if [ $? -eq 0 ]; then echo "Acceptance test succeeded"; fi'
+                }
+            }
+        }
 
-        // stage('Clean container') {
-        //     agent any
-        //     steps{
-        //         unstash 'workspace-stash'
-        //         script {
-        //             sh '''
-        //                 docker stop $IMAGE_NAME
-        //                 docker rm $IMAGE_NAME
-        //             '''
-        //         }
-        //     }
-        // }
-        // stage('Login and Push Image on Docker Hub') {
-        //     when{
-        //         expression {GIT_BRANCH == 'origin/main'}
-        //     }
-        //     agent any
-        //     steps{
-        //         unstash 'workspace-stash'
-        //         script {
-        //             sh '''
-        //                 echo $DOCKERHUB_PSW | docker login -u $DOCKERHUB_USR --password-stdin
-        //                 docker push $DOCKERHUB_USR/$IMAGE_NAME:$IMAGE_TAG
-        //             '''
-        //         }
-        //     }
-        // }
+        stage('Clean container') {
+            agent any
+            steps{
+                script {
+                    sh '''
+                        docker stop $IMAGE_NAME
+                        docker rm $IMAGE_NAME
+                    '''
+                }
+            }
+        }
+        stage('Login and Push Image on Docker Hub') {
+            when{
+                expression {GIT_BRANCH == 'origin/main'}
+            }
+            agent any
+            steps{
+                script {
+                    sh '''
+                        echo $DOCKERHUB_PSW | docker login -u $DOCKERHUB_USR --password-stdin
+                        docker push $DOCKERHUB_USR/$IMAGE_NAME:$IMAGE_TAG
+                    '''
+                }
+            }
+        }
 
 
         stage('Provision DEV environment on AWS with Terraform') {
@@ -150,8 +145,7 @@ pipeline {
 
                     ''' 
                 }
-                stash includes: 'sources/**, devops-hamid.pem', name: 'workspace-stash'
-                //stash includes: '**/*', name: 'workspace-stash'
+                stash includes: '**/*', name: 'workspace-stash'
             }
         }
 
@@ -176,22 +170,22 @@ pipeline {
                         }
                     }
                 }
-                // stage ('Install Docker and Deploy applications on aws DEV environment'){
-                //     steps {
-                //         unstash 'workspace-stash'
-                //         script {
-                //             sh '''
-                //                 export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
-                //                 ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l dev
-                //                 #ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l dev
-                //                 #ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l dev
-                //                 #ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l dev
+                stage ('Install Docker and Deploy applications on aws DEV environment'){
+                    steps {
+                        unstash 'workspace-stash'
+                        script {
+                            sh '''
+                                export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
+                                ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l dev
+                                #ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l dev
+                                #ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l dev
+                                #ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l dev
 
 
-                //             '''
-                //         }
-                //     }
-                // }
+                            '''
+                        }
+                    }
+                }
             }
         }
 
