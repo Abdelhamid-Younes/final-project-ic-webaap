@@ -262,10 +262,6 @@ pipeline {
                         cat /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/prod-server.yml
                         
                     ''' 
-                    timeout(time: 15, unit: "MINUTES") {
-                        input message: "wait for a moment to check files ?", ok: 'Yes'
-                    }
-
                 }
                 stash includes: '**/*', name: 'workspace-prod-stash'
             }
@@ -304,10 +300,10 @@ pipeline {
 
 
                                 export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l prod
-                                ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l prod
-                                ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l prod
-                                ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l prod
+                                ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l prod-server
+                                ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l prod-server
+                                ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l prod-server
+                                ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l prod-server
 
 
                             '''
