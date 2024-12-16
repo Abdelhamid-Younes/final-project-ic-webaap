@@ -152,7 +152,7 @@ pipeline {
 
                         #pwd
 
-                        #mkdir -p /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars
+                        mkdir -p /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars
 
                         #echo "Generating host_vars for EC2 dev-server"
                         #echo "ansible_host: $(awk '{print $2}' ./files/ec2_IP.txt)" > /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
@@ -280,38 +280,32 @@ pipeline {
                         unstash 'workspace-prod-stash'
                         script {
                             sh '''
-
-
                                 apt update -y
                                 apt install sshpass -y
-                                #pwd
+                                pwd
 
                                 export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
                                 ansible prod-server -m ping --private-key devops-hamid.pem
-                                ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l prod
-
                             '''
                         }
                     }
                 }
-                // stage ('Install Docker and Deploy applications on aws PROD environment'){
-                //     steps {
-                //         unstash 'workspace-prod-stash'
-                //         script {
-                //             sh '''
-                //                 pwd
+                stage ('Install Docker and Deploy applications on aws PROD environment'){
+                    steps {
+                        unstash 'workspace-prod-stash'
+                        script {
+                            sh '''
+                                pwd
 
-                //                 export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
-                //                 ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l prod
-                //                 #ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l prod
-                //                 #ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l prod
-                //                 #ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l prod
-
-
-                //             '''
-                //         }
-                //     }
-                // }
+                                export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
+                                ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l prod
+                                ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l prod
+                                ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l prod
+                                ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l prod
+                            '''
+                        }
+                    }
+                }
             }
         }
 
