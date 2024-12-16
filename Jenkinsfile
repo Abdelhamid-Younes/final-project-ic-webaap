@@ -150,7 +150,8 @@ pipeline {
 
                     ''' 
                 }
-                stash includes: '**/*', name: 'workspace-stash'
+                stash includes: 'sources/ansible/**, devops-hamid.pem', name: 'workspace-stash'
+                //stash includes: '**/*', name: 'workspace-stash'
             }
         }
 
@@ -214,7 +215,7 @@ pipeline {
                     //     input message: "Do you confirm deleting aws ec2 ?", ok: 'Yes'
                     // }
                     
-                    input message: "Do you confirm deleting aws DEV environment ?", ok: 'yes'
+                    input message: "Do you confirm deleting AWS DEV environment ?", ok: 'Yes'
 
                     // Delete DEV environment
                     sh'''
