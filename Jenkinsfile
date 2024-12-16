@@ -135,81 +135,80 @@ pipeline {
                         chmod 600 devops-hamid.pem
                         #cat devops-hamid.pem
                     '''
-                    // sh '''
-                    //     echo "Initializing Terraform"
-                    //     cd "./sources/terraform/dev"
-                    //     terraform init -input=false
+                    sh '''
+                        echo "Initializing Terraform"
+                        cd "./sources/terraform/dev"
+                        terraform init -input=false
 
-                    //     echo "Validating Terraform configuration"
-                    //     terraform validate
+                        echo "Validating Terraform configuration"
+                        terraform validate
 
-                    //     echo "Generating Terraform plan"
-                    //     terraform plan -out=tfplan
+                        echo "Generating Terraform plan"
+                        terraform plan -out=tfplan
 
-                    //     echo "Applying Terraform plan"
-                    //     terraform apply -input=false -auto-approve tfplan
+                        echo "Applying Terraform plan"
+                        terraform apply -input=false -auto-approve tfplan
 
-                    //     #mkdir -p /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars
+                        #mkdir -p /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars
 
-                    //     echo "Generating host_vars for EC2 dev-server"
-                    //     echo "ansible_host: $(awk '{print $2}' ./files/ec2_IP.txt)" > /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
+                        echo "Generating host_vars for EC2 dev-server"
+                        echo "ansible_host: $(awk '{print $2}' ./files/ec2_IP.txt)" > /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
 
-                    //     echo "Displaying host_vars content"
-                    //     cat /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
-                    // ''' 
-                    // timeout(time: 15, unit: "MINUTES") {
-                    //     input message: "wait for a moment to check files ?", ok: 'Yes'
-                    // }
+                        echo "Displaying host_vars content"
+                        cat /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
+                    ''' 
+                    timeout(time: 15, unit: "MINUTES") {
+                        input message: "wait for a moment to check files ?", ok: 'Yes'
+                    }
                 }
                 stash includes: '**/*', name: 'workspace-stash'
             }
         }
 
-        // stage('Deploy application on DEV environment with ansible') {
-        //     agent {
-        //         docker {
-        //             image 'registry.gitlab.com/robconnolly/docker-ansible:latest'
-        //         }
-        //     }
-        //     stages {
-        //         stage ('Ping dev server'){
-        //             steps {
-        //                 unstash 'workspace-stash'
-        //                 script {
-        //                     sh '''
+        stage('Deploy application on DEV environment with ansible') {
+            agent {
+                docker {
+                    image 'registry.gitlab.com/robconnolly/docker-ansible:latest'
+                }
+            }
+            stages {
+                stage ('Ping dev server'){
+                    steps {
+                        unstash 'workspace-stash'
+                        script {
+                            sh '''
 
 
-        //                         apt update -y
-        //                         apt install sshpass -y
-        //                         pwd
+                                apt update -y
+                                apt install sshpass -y
+                                pwd
 
-        //                         export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
-        //                         ansible dev-server -m ping --private-key devops-hamid.pem
-        //                     '''
-        //                 }
-        //             }
-        //         }
-        //         stage ('Install Docker and Deploy applications on aws DEV environment'){
-        //             steps {
-        //                 unstash 'workspace-stash'
-        //                 script {
-        //                     sh '''
-        //                         pwd
+                                export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
+                                ansible dev-server -m ping --private-key devops-hamid.pem
+                            '''
+                        }
+                    }
+                }
+                stage ('Install Docker and Deploy applications on aws DEV environment'){
+                    steps {
+                        unstash 'workspace-stash'
+                        script {
+                            sh '''
+                                pwd
+                                
+                                export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
+                                ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l dev
+                                #ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l dev
+                                #ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l dev
+                                #ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l dev
 
 
-        //                         export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
-        //                         ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l dev
-        //                         #ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l dev
-        //                         #ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l dev
-        //                         #ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l dev
-
-
-        //                     '''
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+                            '''
+                        }
+                    }
+                }
+            }
+        }
 
         stage('Delete DEV environment And create PROD one') {
             agent {
@@ -227,87 +226,79 @@ pipeline {
             steps {
                 unstash 'workspace-stash'
                 script {
-                    // timeout(time: 10, unit: "MINUTES") {
-                    //     input message: "Do you confirm deleting aws ec2 ?", ok: 'Yes'
-                    // }
+                    timeout(time: 10, unit: "MINUTES") {
+                        input message: "Do you confirm deleting aws ec2 ?", ok: 'Yes'
+                    }
                     // Delete DEV environment
-                    // sh'''
-                    //     cd "./sources/terraform/dev"
-                    //     terraform destroy --auto-approve
-                    // '''
+                    sh'''
+                        cd "./sources/terraform/dev"
+                        terraform destroy --auto-approve
+                    '''
                     // Create PROD environment
-                    sh '''
-                        echo "Initializing Terraform"
-                        cd "./sources/terraform/prod"
-                        terraform init -input=false
+                    // sh '''
+                    //     echo "Initializing Terraform"
+                    //     cd "./sources/terraform/prod"
+                    //     terraform init -input=false
 
-                        echo "Validating Terraform configuration"
-                        terraform validate
+                    //     echo "Validating Terraform configuration"
+                    //     terraform validate
 
-                        echo "Generating Terraform plan"
-                        terraform plan -out=tfplan
+                    //     echo "Generating Terraform plan"
+                    //     terraform plan -out=tfplan
 
-                        echo "Applying Terraform plan"
-                        terraform apply -input=false -auto-approve tfplan
+                    //     echo "Applying Terraform plan"
+                    //     terraform apply -input=false -auto-approve tfplan
 
-                        echo "Generating host_vars for EC2 prod-server"
-                        echo "ansible_host: $(awk '{print $2}' ./files/ec2_IP.txt)" > /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/prod-server.yml
+                    //     echo "Generating host_vars for EC2 prod-server"
+                    //     echo "ansible_host: $(awk '{print $2}' ./files/ec2_IP.txt)" > /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/prod-server.yml
 
-                        echo "Displaying host_vars content"
-                        cat /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/prod-server.yml
+                    //     echo "Displaying host_vars content"
+                    //     cat /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/prod-server.yml
                         
-                    ''' 
+                    // ''' 
                 }
-                stash includes: '**/*', name: 'workspace-prod-stash'
+                //stash includes: '**/*', name: 'workspace-prod-stash'
             }
         }
 
-        stage('Deploy application on PROD environment with ansible') {
-            agent {
-                docker {
-                    image 'registry.gitlab.com/robconnolly/docker-ansible:latest'
-                }
-            }
-            stages {
-                stage ('Ping PROD server'){
-                    steps {
-                        unstash 'workspace-prod-stash'
-                        script {
-                            sh '''
-                                apt update -y
-                                apt install sshpass -y
-                                pwd
+        // stage('Deploy application on PROD environment with ansible') {
+        //     agent {
+        //         docker {
+        //             image 'registry.gitlab.com/robconnolly/docker-ansible:latest'
+        //         }
+        //     }
+        //     stages {
+        //         stage ('Ping PROD server'){
+        //             steps {
+        //                 unstash 'workspace-prod-stash'
+        //                 script {
+        //                     sh '''
+        //                         apt update -y
+        //                         apt install sshpass -y
+        //                         pwd
 
-                                export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
-                                ansible prod-server -m ping --private-key devops-hamid.pem
-                            '''
-                        }
-                    }
-                }
-                stage ('Install Docker and Deploy applications on aws PROD environment'){
-                    steps {
-                        unstash 'workspace-prod-stash'
-                        script {
-                            sh '''
-                                export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l prod
-                                #ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l prod
-                                #ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l prod
-                                #ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l prod
-                            '''
-                            timeout(time: 15, unit: "MINUTES") {
-                                input message: "Do you confirm deleting aws ec2 ?", ok: 'Yes'
-                            }
-                            //Delete PROD environment
-                            sh'''
-                                cd "./sources/terraform/prod"
-                                terraform destroy --auto-approve
-                            '''
-                        }
-                    }
-                }
-            }
-        }
+        //                         export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
+        //                         ansible prod-server -m ping --private-key devops-hamid.pem
+        //                     '''
+        //                 }
+        //             }
+        //         }
+        //         stage ('Install Docker and Deploy applications on aws PROD environment'){
+        //             steps {
+        //                 unstash 'workspace-prod-stash'
+        //                 script {
+        //                     sh '''
+        //                         export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
+        //                         ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l prod
+        //                         #ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l prod
+        //                         #ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l prod
+        //                         #ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l prod
+        //                     '''
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
     }
   post {
