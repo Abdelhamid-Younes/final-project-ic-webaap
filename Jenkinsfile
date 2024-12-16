@@ -177,9 +177,9 @@ pipeline {
                             sh '''
                                 export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
                                 ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l dev
-                                #ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l dev
-                                #ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l dev
-                                #ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l dev
+                                ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l dev
+                                ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l dev
+                                ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l dev
 
 
                             '''
@@ -205,10 +205,7 @@ pipeline {
             steps {
                 unstash 'workspace-stash'
                 script {
-                    // timeout(time: 10, unit: "MINUTES") {
-                    //     input message: "Do you confirm deleting aws ec2 ?", ok: 'Yes'
-                    // }
-                    
+                                       
                     input message: "Do you confirm deleting AWS DEV environment ?", ok: 'Yes'
 
                     // Delete DEV environment
