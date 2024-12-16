@@ -2,8 +2,8 @@
 ansible_python_interpreter: /usr/bin/python3
 docker_image_name: "younesabdh/ic-webapp:1.0"
 host_port: 8000
-container_port: 8080
+container_port: 8000
 odoo_url: "http://{{ odoo_host }}:8069"
 pgadmin_url: "http://{{ pgadmin_host }}:5050"
-odoo_host: "192.168.99.12"
-pgadmin_host: "192.168.99.12"
+odoo_host: "3.93.106.87"
+pgadmin_host: "3.93.106.87"
