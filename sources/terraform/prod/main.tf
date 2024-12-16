@@ -1,6 +1,7 @@
 # Creating sg
 module "sg" {
   source = "../modules/sg-module"
+  sg_name = var.sg_name
 }
 
 # Creating EIP
