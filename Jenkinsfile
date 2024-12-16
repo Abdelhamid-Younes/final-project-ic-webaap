@@ -253,7 +253,7 @@ pipeline {
                         #cat devops-hamid.pem
 
                         echo "Initializing Terraform"
-                        cd "./sources/terraform/prod"
+                        cd "./sources/terraform/dev"
                         terraform init -input=false
 
                         echo "Validating Terraform configuration"
@@ -271,11 +271,11 @@ pipeline {
 
                         mkdir -p /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars
 
-                        echo "Generating host_vars for EC2 prod-server"
-                        echo "ansible_host: $(awk '{print $2}' ./files/ec2_IP.txt)" > /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/prod-server.yml
+                        echo "Generating host_vars for EC2 dev-server"
+                        echo "ansible_host: $(awk '{print $2}' ./files/ec2_IP.txt)" > /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
 
                         echo "Displaying host_vars content"
-                        cat /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/prod-server.yml
+                        cat /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/dev-server.yml
                         
                     ''' 
                     // timeout(time: 15, unit: "MINUTES") {
@@ -293,7 +293,7 @@ pipeline {
                 }
             }
             stages {
-                stage ('Ping PROD server'){
+                stage ('Ping DEV server'){
                     steps {
                         unstash 'workspace-stash'
                         script {
@@ -305,7 +305,7 @@ pipeline {
                                 pwd
 
                                 export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
-                                ansible prod-server -m ping --private-key devops-hamid.pem
+                                ansible dev-server -m ping --private-key devops-hamid.pem
                             '''
                         }
                     }
@@ -319,7 +319,7 @@ pipeline {
 
 
                                 export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
-                                ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l prod
+                                ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l dev
                                 #ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l dev
                                 #ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l dev
                                 #ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l dev
