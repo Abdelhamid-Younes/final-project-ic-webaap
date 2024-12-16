@@ -331,7 +331,7 @@ pipeline {
                 //stash includes: '**/*', name: 'workspace-stash'
             }
         }
-        stage('Deploy application on DEV environment with ansible') {
+        stage('Deploy application on PROD environment with ansible') {
             agent {
                 docker {
                     image 'registry.gitlab.com/robconnolly/docker-ansible:latest'
