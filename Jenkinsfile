@@ -14,10 +14,10 @@ pipeline {
         PRIVATE_KEY = credentials('private_key')            // SSH private key for Ansible access
 
     }
-    agent none
+    agent none   // No default agent; specific agents are defined per stage.
     stages {
         stage('Build image') {
-            agent any
+            agent any   // // Execute this stage on any available agent.
             steps {
                 script {
                     sh 'docker build -t ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG .'
@@ -34,7 +34,7 @@ pipeline {
                         echo "Cleaning existing container if exists"
                         docker ps -a | grep -i $IMAGE_NAME && docker rm -f $IMAGE_NAME
                         docker run --name $IMAGE_NAME -d -p $APP_EXPOSED_PORT:$INTERNAL_PORT ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG
-                        sleep 5
+                        sleep 5  
                     '''
                 }
             }
@@ -44,11 +44,11 @@ pipeline {
             agent any
             steps{
                 script {
-                    sh 'docker stop ${IMAGE_NAME} || true && docker rm ${IMAGE_NAME} || true'
+                    sh 'docker stop ${IMAGE_NAME} || true && docker rm ${IMAGE_NAME} || true'   // // Stop and remove any previous container.
                     sh 'docker run --name $IMAGE_NAME -d -p $APP_EXPOSED_PORT:$INTERNAL_PORT ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG'
                     sh 'sleep 5'
                     sh 'curl -k http://172.17.0.1:$APP_EXPOSED_PORT | grep -i "IC GROUP"'
-                    sh 'if [ $? -eq 0 ]; then echo "Acceptance test succeeded"; fi'
+                    sh 'if [ $? -eq 0 ]; then echo "Acceptance test succeeded"; fi'  // // Verify the test
                 }
             }
         }
@@ -67,7 +67,7 @@ pipeline {
 
         stage('Login and Push Image on Docker Hub') {
             when{
-                expression {GIT_BRANCH == 'origin/main'}
+                expression {GIT_BRANCH == 'origin/main'}   // // Only execute if the branch is 'main'.
             }
             agent any
             steps{
@@ -83,13 +83,13 @@ pipeline {
         stage('Provision DEV-env on AWS') {
             agent { 
                 docker { 
-                    image 'jenkins/jnlp-agent-terraform'  
+                    image 'jenkins/jnlp-agent-terraform'  // Use a Docker image with Terraform preinstalled.
                 } 
             }
             environment {
                 AWS_ACCESS_KEY = credentials('aws_access_key')
                 AWS_SECRET_KEY = credentials('aws_secret_key')
-                AWS_PRIVATE_KEY = credentials('aws_private_key')
+                AWS_PRIVATE_KEY = credentials('aws_private_key')   // SSH private key for accessing the AWS EC2 instance.
             }
             steps {
                 script {
@@ -132,24 +132,24 @@ pipeline {
 
                     ''' 
                 }
-                stash includes: '**/*', name: 'workspace-stash'
+                stash includes: '**/*', name: 'workspace-stash'  // Save the current workspace state for reuse in subsequent stages.
             }
         }
 
         stage('Deploy app on DEV-env on AWS') {
             agent {
                 docker {
-                    image 'registry.gitlab.com/robconnolly/docker-ansible:latest'
+                    image 'registry.gitlab.com/robconnolly/docker-ansible:latest'   // Use a Docker image with Ansible preinstalled.
                 }
             }
-            stages {
+            stages {   // Nested stages for deployment tasks.
                 stage ('Ping DEV server'){
                     steps {
-                        unstash 'workspace-stash'
+                        unstash 'workspace-stash'   // Restore the workspace state saved in the previous stage.
                         script {
                             sh '''
                                 apt update -y
-                                apt install sshpass -y
+                                apt install sshpass -y  
 
                                 export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
                                 ansible dev-server -m ping --private-key devops-hamid.pem
@@ -161,8 +161,8 @@ pipeline {
                 stage ('Install Docker and Deploy app on DEV-env'){
                     steps {
                         unstash 'workspace-stash'
-                        script {
-                            sh '''
+                        script {    // Run Ansible playbooks to configure the DEV environment and deploy the application.
+                            sh '''  
                                 export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
                                 ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l dev
                                 ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l dev
@@ -192,8 +192,9 @@ pipeline {
             steps {
                 unstash 'workspace-stash'
                 script {
-
+                    // Prompt for confirmation before deleting the DEV environment.
                     input message: "Do you confirm deleting AWS DEV environment ?", ok: 'Yes'
+                    
 
                     // Delete DEV environment
                     sh'''
@@ -220,7 +221,7 @@ pipeline {
 
                     ''' 
                 }
-                stash includes: '**/*', name: 'workspace-prod-stash'
+                stash includes: '**/*', name: 'workspace-prod-stash'  // Save the PROD server's IP address for use with Ansible.
             }
         }
 
@@ -231,7 +232,7 @@ pipeline {
                 }
             }
             stages {
-                stage ('Ping PROD server'){
+                stage ('Ping PROD server'){ // Verify connectivity with the PROD server.
                     steps {
                         unstash 'workspace-prod-stash'
                         script {
@@ -269,7 +270,7 @@ pipeline {
     post {
         always {
             script {
-                slackNotifier currentBuild.result
+                slackNotifier currentBuild.result   // Send a Slack notification with the current build result.
             }
         }  
     }
