@@ -29,68 +29,68 @@ pipeline {
         //     }
         // }
 
-        // stage('Build image') {
-        //     agent any
-        //     steps {
-        //         script {
-        //             sh 'docker build -t ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG .'
-        //         }
-        //     }
-        // }
+        stage('Build image') {
+            agent any
+            steps {
+                script {
+                    sh 'docker build -t ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG .'
+                }
+            }
+        }
 
-        // stage('Run container based on built image'){
-        //     agent any
-        //     steps {
-        //         script{
-        //             sh '''
+        stage('Run container based on built image'){
+            agent any
+            steps {
+                script{
+                    sh '''
 
-        //                 echo "Cleaning existing container if exists"
-        //                 docker ps -a | grep -i $IMAGE_NAME && docker rm -f $IMAGE_NAME
-        //                 docker run --name $IMAGE_NAME -d -p $APP_EXPOSED_PORT:$INTERNAL_PORT ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG
-        //                 sleep 5
-        //             '''
-        //         }
-        //     }
-        // }
+                        echo "Cleaning existing container if exists"
+                        docker ps -a | grep -i $IMAGE_NAME && docker rm -f $IMAGE_NAME
+                        docker run --name $IMAGE_NAME -d -p $APP_EXPOSED_PORT:$INTERNAL_PORT ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG
+                        sleep 5
+                    '''
+                }
+            }
+        }
 
-        // stage('Test image') {
-        //     agent any
-        //     steps{
-        //         script {
-        //             sh 'docker stop ${IMAGE_NAME} || true && docker rm ${IMAGE_NAME} || true'
-        //             sh 'docker run --name $IMAGE_NAME -d -p $APP_EXPOSED_PORT:$INTERNAL_PORT ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG'
-        //             sh 'sleep 5'
-        //             sh 'curl -k http://172.17.0.1:$APP_EXPOSED_PORT | grep -i "IC GROUP"'
-        //             sh 'if [ $? -eq 0 ]; then echo "Acceptance test succeeded"; fi'
-        //         }
-        //     }
-        // }
+        stage('Test image') {
+            agent any
+            steps{
+                script {
+                    sh 'docker stop ${IMAGE_NAME} || true && docker rm ${IMAGE_NAME} || true'
+                    sh 'docker run --name $IMAGE_NAME -d -p $APP_EXPOSED_PORT:$INTERNAL_PORT ${DOCKERHUB_USR}/$IMAGE_NAME:$IMAGE_TAG'
+                    sh 'sleep 5'
+                    sh 'curl -k http://172.17.0.1:$APP_EXPOSED_PORT | grep -i "IC GROUP"'
+                    sh 'if [ $? -eq 0 ]; then echo "Acceptance test succeeded"; fi'
+                }
+            }
+        }
 
-        // stage('Clean container') {
-        //     agent any
-        //     steps{
-        //         script {
-        //             sh '''
-        //                 docker stop $IMAGE_NAME
-        //                 docker rm $IMAGE_NAME
-        //             '''
-        //         }
-        //     }
-        // }
-        // stage('Login and Push Image on Docker Hub') {
-        //     when{
-        //         expression {GIT_BRANCH == 'origin/main'}
-        //     }
-        //     agent any
-        //     steps{
-        //         script {
-        //             sh '''
-        //                 echo $DOCKERHUB_PSW | docker login -u $DOCKERHUB_USR --password-stdin
-        //                 docker push $DOCKERHUB_USR/$IMAGE_NAME:$IMAGE_TAG
-        //             '''
-        //         }
-        //     }
-        // }
+        stage('Clean container') {
+            agent any
+            steps{
+                script {
+                    sh '''
+                        docker stop $IMAGE_NAME
+                        docker rm $IMAGE_NAME
+                    '''
+                }
+            }
+        }
+        stage('Login and Push Image on Docker Hub') {
+            when{
+                expression {GIT_BRANCH == 'origin/main'}
+            }
+            agent any
+            steps{
+                script {
+                    sh '''
+                        echo $DOCKERHUB_PSW | docker login -u $DOCKERHUB_USR --password-stdin
+                        docker push $DOCKERHUB_USR/$IMAGE_NAME:$IMAGE_TAG
+                    '''
+                }
+            }
+        }
 
 
         stage('Provision DEV environment on AWS with Terraform') {
@@ -177,8 +177,8 @@ pipeline {
                             sh '''
                                 export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
                                 ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l dev
-                                ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l dev
-                                ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l dev
+                                #ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l dev
+                                #ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l dev
                                 ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l dev
 
 
@@ -213,71 +213,71 @@ pipeline {
                         cd "./sources/terraform/dev"
                         terraform destroy --auto-approve
                     '''
-                    // Create PROD environment
-                    // sh '''
-                    //     echo "Initializing Terraform"
-                    //     cd "./sources/terraform/prod"
-                    //     terraform init -input=false
+                    Create PROD environment
+                    sh '''
+                        echo "Initializing Terraform"
+                        cd "./sources/terraform/prod"
+                        terraform init -input=false
 
-                    //     echo "Validating Terraform configuration"
-                    //     terraform validate
+                        echo "Validating Terraform configuration"
+                        terraform validate
 
-                    //     echo "Generating Terraform plan"
-                    //     terraform plan -out=tfplan
+                        echo "Generating Terraform plan"
+                        terraform plan -out=tfplan
 
-                    //     echo "Applying Terraform plan"
-                    //     terraform apply -input=false -auto-approve tfplan
+                        echo "Applying Terraform plan"
+                        terraform apply -input=false -auto-approve tfplan
 
-                    //     echo "Generating host_vars for EC2 prod-server"
-                    //     echo "ansible_host: $(awk '{print $2}' ./files/ec2_IP.txt)" > /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/prod-server.yml
+                        echo "Generating host_vars for EC2 prod-server"
+                        echo "ansible_host: $(awk '{print $2}' ./files/ec2_IP.txt)" > /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/prod-server.yml
 
-                    //     echo "Displaying host_vars content"
-                    //     cat /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/prod-server.yml
+                        echo "Displaying host_vars content"
+                        cat /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/prod-server.yml
                         
-                    // ''' 
+                    ''' 
                 }
-                //stash includes: '**/*', name: 'workspace-prod-stash'
+                stash includes: '**/*', name: 'workspace-prod-stash'
             }
         }
 
-        // stage('Deploy application on PROD environment with ansible') {
-        //     agent {
-        //         docker {
-        //             image 'registry.gitlab.com/robconnolly/docker-ansible:latest'
-        //         }
-        //     }
-        //     stages {
-        //         stage ('Ping PROD server'){
-        //             steps {
-        //                 unstash 'workspace-prod-stash'
-        //                 script {
-        //                     sh '''
-        //                         apt update -y
-        //                         apt install sshpass -y
-        //                         pwd
+        stage('Deploy application on PROD environment with ansible') {
+            agent {
+                docker {
+                    image 'registry.gitlab.com/robconnolly/docker-ansible:latest'
+                }
+            }
+            stages {
+                stage ('Ping PROD server'){
+                    steps {
+                        unstash 'workspace-prod-stash'
+                        script {
+                            sh '''
+                                apt update -y
+                                apt install sshpass -y
+                                pwd
 
-        //                         export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
-        //                         ansible prod-server -m ping --private-key devops-hamid.pem
-        //                     '''
-        //                 }
-        //             }
-        //         }
-        //         stage ('Install Docker and Deploy applications on aws PROD environment'){
-        //             steps {
-        //                 unstash 'workspace-prod-stash'
-        //                 script {
-        //                     sh '''
-        //                         export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
-        //                         ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l prod
-        //                         #ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l prod
-        //                         #ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l prod
-        //                         #ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l prod
-        //                     '''
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+                                export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
+                                ansible prod-server -m ping --private-key devops-hamid.pem
+                            '''
+                        }
+                    }
+                }
+                stage ('Install Docker and Deploy applications on aws PROD environment'){
+                    steps {
+                        unstash 'workspace-prod-stash'
+                        script {
+                            sh '''
+                                export ANSIBLE_CONFIG=$PWD/sources/ansible/ansible.cfg
+                                ansible-playbook sources/ansible/playbooks/install_docker_linux.yml --private-key devops-hamid.pem -l prod
+                                #ansible-playbook sources/ansible/playbooks/deploy_odoo.yml --private-key devops-hamid.pem -l prod
+                                #ansible-playbook sources/ansible/playbooks/deploy_pgadmin.yml --private-key devops-hamid.pem -l prod
+                                ansible-playbook sources/ansible/playbooks/deploy_icwebapp.yml --private-key devops-hamid.pem -l prod
+                            '''
+                        }
+                    }
+                }
+            }
+        }
 
     }
   post {
