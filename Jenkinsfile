@@ -213,7 +213,7 @@ pipeline {
                         cd "./sources/terraform/dev"
                         terraform destroy --auto-approve
                     '''
-                    Create PROD environment
+                    // Create PROD environment
                     sh '''
                         echo "Initializing Terraform"
                         cd "./sources/terraform/prod"
