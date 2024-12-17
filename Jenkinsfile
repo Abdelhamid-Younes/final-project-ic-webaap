@@ -80,7 +80,7 @@ pipeline {
             }
         }
 
-        stage('Provision DEV env on AWS') {
+        stage('Provision DEV-env on AWS') {
             agent { 
                 docker { 
                     image 'jenkins/jnlp-agent-terraform'  
@@ -136,14 +136,14 @@ pipeline {
             }
         }
 
-        stage('Deploy app on DEV env on AWS') {
+        stage('Deploy app on DEV-env on AWS') {
             agent {
                 docker {
                     image 'registry.gitlab.com/robconnolly/docker-ansible:latest'
                 }
             }
             stages {
-                stage ('Ping dev server'){
+                stage ('Ping DEV server'){
                     steps {
                         unstash 'workspace-stash'
                         script {
@@ -158,7 +158,7 @@ pipeline {
                     }
                 }
 
-                stage ('Install Docker and Deploy app on DEV env'){
+                stage ('Install Docker and Deploy app on DEV-env'){
                     steps {
                         unstash 'workspace-stash'
                         script {
@@ -177,7 +177,7 @@ pipeline {
             }
         }
 
-        stage('Delete DEV env and Provision PROD env') {
+        stage('Delete DEV-env and Provision PROD-env') {
             agent {
                 docker { 
                     image 'jenkins/jnlp-agent-terraform'  
@@ -217,13 +217,14 @@ pipeline {
 
                         echo "Generating host_vars for EC2 prod-server"
                         echo "ansible_host: $(awk '{print $2}' ./files/ec2_IP.txt)" > /var/jenkins_home/workspace/ic-webapp/sources/ansible/host_vars/prod-server.yml
+
                     ''' 
                 }
                 stash includes: '**/*', name: 'workspace-prod-stash'
             }
         }
 
-        stage('Deploy app on PROD env on AWS') {
+        stage('Deploy app on PROD-env on AWS') {
             agent {
                 docker {
                     image 'registry.gitlab.com/robconnolly/docker-ansible:latest'
@@ -246,7 +247,7 @@ pipeline {
                     }
                 }
 
-                stage ('Install Docker and Deploy applications PROD env on AWS'){
+                stage ('Install Docker and Deploy app on PROD-env on AWS'){
                     steps {
                         unstash 'workspace-prod-stash'
                         script {
