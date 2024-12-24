@@ -95,13 +95,13 @@ pipeline {
                 script {
                     sh '''
                         echo "Setting up AWS credentials"
-                        rm -rf devops-hamid.pem $HOME/.aws || true
-                        mkdir -p $HOME/.aws
+                        rm -rf devops-hamid.pem ~/.aws || true
+                        mkdir -p ~/.aws
 
-                        echo "[default]" > $HOME/.aws/credentials
-                        echo "aws_access_key_id=$AWS_ACCESS_KEY" >> $HOME/.aws/credentials
-                        echo "aws_secret_access_key=$AWS_SECRET_KEY" >> $HOME/.aws/credentials
-                        chmod 600 $HOME/.aws/credentials
+                        echo "[default]" > ~/.aws/credentials
+                        echo "aws_access_key_id=$AWS_ACCESS_KEY" >> ~/.aws/credentials
+                        echo "aws_secret_access_key=$AWS_SECRET_KEY" >> ~/.aws/credentials
+                        chmod 600 ~/.aws/credentials
 
                         cd "/var/jenkins_home/workspace/ic-webapp"
                         echo "Cleaning up old files"
