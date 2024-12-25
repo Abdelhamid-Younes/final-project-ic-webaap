@@ -309,9 +309,15 @@ Configure the pipeline:
 ![](images/create_pipeline2.png)
 
 3. Specify the path to the `Jenkinsfile` (default is the root directory).
-4. Navigate to the **Build Triggers** section and check **GITScm Polling** : this option ensures that Jenkins automatically triggers a pipeline run when changes are detected in the repository.
+
+4. Add build parameters:
+
+![](images/build_parameters.png)
+
+5. Navigate to the **Build Triggers** section and check **GITScm Polling** : this option ensures that Jenkins automatically triggers a pipeline run when changes are detected in the repository.
 
 ![](images/create_pipeline3.png)
+
 
 #### Slack Integration for Jenkins Notifications
 
@@ -338,6 +344,49 @@ To configure that, we refer to Global Trusted Pipeline Libraries:
 
  ![](images/shared_library.png)
 
+### Execution of the Pipeline
+
+Once the Jenkins pipeline is triggered (either manually or through SCM polling), the stages outlined in the Jenkinsfile will be executed sequentially. Here's an overview of the steps involved:
+
+1. **Build Image**  
+   The pipeline begins by building the Docker image for the application.
+
+2. **Run Container Based on Built Image**  
+   A container is created and started based on the built image.
+3. **Test Image**  
+   The pipeline runs basic acceptance tests on the newly created container.
+
+4. **Clean Container**  
+   Any running containers are stopped and removed to avoid leaving unused resources.
+
+5. **Login and Push Image to Docker Hub**  
+ The image is pushed to Docker Hub for public access or storage, ensuring that the most recent version is available.
+
+6. **Provision DEV Environment on AWS**  
+   This stage provisions the development environment on AWS using Terraform.
+   
+7. **Deploy Application on DEV Environment**  
+   Once the DEV environment is set up, Ansible is used to install Docker and deploy the application on the EC2 instance.
+   
+8. **Delete DEV Environment and Provision PROD Environment**  
+   The pipeline prompts for confirmation before deleting the DEV environment and proceeding to create the production environment using Terraform.
+
+9. **Deploy Application on PROD Environment**  
+   The pipeline deploys the application on the production environment.
+   
+11. **Post-Build Actions**  
+    After the pipeline finishes, a Slack notification is sent indicating the result of the build.
 
 
+#### Results
+![](images/pipeline-dev.png)
 
+![](images/pipeline-prod.png)
+
+![](images/slack_notifcation.png)
+
+![](images/ic-webapp-prod.png)
+
+![](images/odo-prod.png)
+
+![](images/pgadmin_prod.png)
