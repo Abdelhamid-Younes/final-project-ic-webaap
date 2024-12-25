@@ -73,7 +73,7 @@ The infrastructure consists of two main components:
    - It is used to execute the CI/CD pipeline.
 
 2. **Application Hosting Servers**:
-   - **Ubuntu VMs** running on EC2 instances of type `t2.medium`.
+   - **Ubuntu VMs** running on EC2 instances of type `t2.micro`.
    - Separate servers are configured for the **development** and **production** environments.
    - These servers are created and managed using Terraform.
 
@@ -265,4 +265,79 @@ ansible-playbook -i hosts.yml playbooks/install_docker_linux.yml
 ansible-playbook -i hosts.yml playbooks/deploy_odoo.yml
 ansible-playbook -i hosts.yml playbooks/deploy_pgadmin.yml
 ansible-playbook -i hosts.yml playbooks/deploy_icwebapp.yml
-``` 
+```
+![](images/install_docker_role.png)
+
+## 3. CI/CD Pipeline with Jenkins:
+In this section we give an an overview of setting up a CI/CD pipeline in Jenkins to automate the deployment of applications. It includes steps to configure Jenkins, manage necessary plugins, create credentials, and define a pipeline for seamless application deployment.
+
+#### Installing Necessary Plugins
+
+To ensure Jenkins has all the required functionality, install the following plugins:
+
+![](images/jenkins_plugins.png)
+
+#### Creating Credentials
+
+Credentials are essential for Jenkins to securely access resources such as Docker Hub, SSH keys.
+
+![](images/credentials.png)
+
+All these credentials are of type `secret text`, except one,  `aws_private_key` which is `secret file`
+
+#### Creating the Pipeline
+
+A Jenkins pipeline automates the build, test, and deploy stages of your application lifecycle.
+
+##### Steps to Create the Pipeline
+
+1. Navigate to **New Item** in Jenkins and select **Pipeline**.
+2. Name the pipeline and click **OK**.
+
+![](images/create_pipeline.png)
+
+##### Configuring the Pipeline from SCM
+
+Using a `Jenkinsfile` stored in the repository ensures that the pipeline configuration is version-controlled and easily replicable.
+Configure the pipeline:
+1. Under the **Pipeline** section, select **Pipeline script from SCM**.
+2. Choose the **Git** option and provide:
+   - In the **Pipeline** section, choose **Pipeline script from SCM**.
+   - Select the repository containing the pipeline script (`Jenkinsfile`).
+   - Specify the branch (`main`).
+  
+![](images/create_pipeline2.png)
+
+3. Specify the path to the `Jenkinsfile` (default is the root directory).
+4. Navigate to the **Build Triggers** section and check **GITScm Polling** : this option ensures that Jenkins automatically triggers a pipeline run when changes are detected in the repository.
+
+![](images/create_pipeline3.png)
+
+#### Slack Integration for Jenkins Notifications
+
+To keep your team informed about the status of Jenkins builds and deployments, integrating Slack with Jenkins allows you to receive real-time notifications about pipeline activities such as successful builds, failures, and other important events.
+
+To integrate Slack with Jenkins, we follow theses steps:
+
+1. **Install the Slack Notification Plugin**:
+   - Navigate to **Manage Jenkins** > **Manage Plugins**.
+   - Search for **Slack Notification Plugin** and install it.
+
+2. **Configure Jenkins for Slack Integration**:
+   - Go to **Manage Jenkins** > **Configure System**.
+   - Scroll down to **Slack**.
+   - Enter the **workspace** you have restored earlier from your slack account.
+   - Set the **Default Channel** to the channel you want notifications to be sent to (e.g., `#jenkins_eazytraining`).
+   - Select the aduaquat credential to allow jenkins accessing and writting in the slack channel !
+
+![](images/slack_notif.png)
+
+#### Shared library: 
+In order to make the Slack notification available to all projects, we have created a Shared Library which will allow a simple call to be made in the Jenkinsfiles.
+To configure that, we refer to Global Trusted Pipeline Libraries:
+
+ ![](images/shared_library.png)
+
+
+
+
