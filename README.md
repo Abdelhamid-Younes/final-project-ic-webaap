@@ -61,9 +61,9 @@ And the push in dockerhub:
 
 ![](images/dockerhub_image_pushed.png)
 
-# PART 2: CI/CD Pipeline Setup with Jenkins, Terraform and Ansible
+## PART 2: CI/CD Pipeline Setup with Jenkins, Terraform and Ansible
 
-## 1. Setting Up the AWS Infrastructure Using Terraform
+### 1. Setting Up the AWS Infrastructure Using Terraform
 
 The infrastructure consists of two main components:
 
@@ -145,7 +145,7 @@ These variables are defined in `variables.tf` and are used throughout the module
 - **`ec2_public_ip`**: The public IP address of the provisioned EC2 instance.
 - **`eip_public_ip`**: The Elastic IP associated with the EC2 instance).
 
-## 2. Ansible Roles to deploy Applications
+### 2. Ansible Roles to deploy Applications
 This section focuses on deploying applications using Ansible by defining modular roles, configurations, and playbooks. Here's an overview of the essential components:
 
 ### Tree Structure Overview
@@ -268,7 +268,7 @@ ansible-playbook -i hosts.yml playbooks/deploy_icwebapp.yml
 ```
 ![](images/install_docker_role.png)
 
-## 3. CI/CD Pipeline with Jenkins:
+### 3. CI/CD Pipeline with Jenkins:
 In this section we give an an overview of setting up a CI/CD pipeline in Jenkins to automate the deployment of applications. It includes steps to configure Jenkins, manage necessary plugins, create credentials, and define a pipeline for seamless application deployment.
 
 #### Installing Necessary Plugins
