@@ -418,3 +418,237 @@ resources:
   - ./pgadmin/pgadmin-deploy.yaml
   - ./odoo/odoo-deploy.yaml
   - ./ic-webapp/ic-webapp-deploy.yaml
+```
+
+### **Namespace**
+
+The resources are deployed within a dedicated namespace, `icgroup`, as defined in the `ic-group-namespace.yaml` manifest:
+
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: icgroup
+  labels:
+    env: prod
+```
+
+This namespace ensures logical isolation for the deployed resources.
+
+#### **Deployments**
+
+##### **1. PostgreSQL**
+
+The PostgreSQL database is deployed using a StatefulSet, which provides stable network identifiers and persistent storage. This deployment ensures data integrity and availability, even in case of pod restarts or re-scheduling. Sensitive configuration details, such as passwords, are securely stored in a Kubernetes secret.
+
+**Manifest (`postgres-deploy.yaml`):**
+
+```yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-prod
+  namespace: icgroup
+  labels:
+    app: postgres
+    env: prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: postgres
+        - name: POSTGRES_USER
+          value: odoo
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-scrt
+              key: POSTGRES_PASSWORD
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: db-volume
+      volumes:
+      - name: db-volume
+        hostPath:
+          path: /db-data
+          type: DirectoryOrCreate
+```
+
+##### **2. pgAdmin**
+
+pgAdmin, a web-based database management tool, is deployed to provide an intuitive interface for managing PostgreSQL databases. Its configuration is sourced from a `ConfigMap` for non-sensitive data and a `Secret` for sensitive credentials. Persistent storage is ensured using a `hostPath` volume.
+
+**Manifest (`pgadmin-deploy.yaml`):**
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgadmin-prod
+  namespace: icgroup
+  labels:
+    app: pgadmin
+    env: prod
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: pgadmin-pods
+  template:
+    metadata:
+      labels:
+        app: pgadmin-pods
+    spec:
+      containers:
+      - image: dpage/pgadmin4
+        name: pgadmin-ctnr
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
+        ports:
+        - containerPort: 80
+        env:
+        - name: PGADMIN_DEFAULT_EMAIL
+          value: admin@pgadmin.com
+        - name: PGADMIN_DEFAULT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pgadmin-secret
+              key: PGADMIN_DEFAULT_PASSWORD
+        volumeMounts:
+        - name: servers
+          mountPath: /pgadmin4/servers.json
+        - name: pg-volume
+          mountPath: /var/lib/pgadmin
+      volumes:
+      - name: servers
+        configMap:
+          name: pgadmin-configmap
+      - name: pg-volume
+        hostPath:
+          path: /pg-data
+          type: DirectoryOrCreate
+```
+
+##### **3. Odoo**
+
+Odoo, an open-source suite of business applications, is deployed with a rolling update strategy to ensure minimal disruption during updates. The configuration includes environment variables for connecting to the PostgreSQL database and other dependencies.
+
+**Manifest (`odoo-deploy.yaml`):**
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: odoo-prod
+  namespace: icgroup
+  labels:
+    app: odoo
+    env: prod
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: odoo-pods
+  template:
+    metadata:
+      labels:
+        app: odoo-pods
+    spec:
+      containers:
+      - image: odoo:latest
+        name: odoo-ctnr
+        env:
+        - name: POSTGRES_URL
+          value: http://postgres-prod.icgroup.svc.cluster.local:5432
+        ports:
+        - containerPort: 8069
+```
+
+##### **4. Ic-Webapp**
+
+The IC Web App, a custom application, is deployed with a replica count of 2 for redundancy and rolling updates to ensure seamless upgrades with minimal downtime. Environment variables are used to connect the app to external services like Odoo and pgAdmin.
+
+**Manifest (`ic-webapp-deploy.yaml`):**
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ic-webapp-prod
+  namespace: icgroup
+  labels:
+    app: ic-webapp
+    env: prod
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: ic-webapp-pods
+  template:
+    metadata:
+      labels:
+        app: ic-webapp-pods
+    spec:
+      containers:
+      - image: younesabdh/ic-webapp:v1.0
+        name: ic-webapp-ctnr
+        env:
+        - name: ODOO_URL
+          value: http://192.168.56.10:30200
+        - name: PGADMIN_URL
+          value: http://192.168.56.10:30300
+        ports:
+        - containerPort: 8080
+```
+
+#### **Deployment Steps**
+
+1. **Ensure the Kubernetes cluster is running and accessible.**
+
+2. **Apply the manifests**:
+
+   Use the `kubectl apply -k` command to apply the resources defined in the directory containing the `kustomization.yaml` file:
+
+```bash
+   kubectl apply -k .
+```
+
+4. **Verify the Deployment**:
+
+To ensure that all resources have been deployed correctly, run the following command to list the resources in the `ic-group` namespace:
+
+```bash
+kubectl get all -n ic-group
+``` 
+
+4. **Access the applications**: 
+
+Access the deployed applications using their respective NodePort services, which expose the applications to the external network.
+
+
