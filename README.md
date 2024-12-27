@@ -390,3 +390,31 @@ Once the Jenkins pipeline is triggered (either manually or through SCM polling),
 ![](images/odo-prod.png)
 
 ![](images/pgadmin_prod.png)
+
+## Part 3: Deployment of Different Applications in a Kubernetes Cluster
+
+This section describes how the project deploys various applications in a Kubernetes cluster using manifest files. The deployments include setting up a PostgreSQL database, Odoo, pgAdmin, and a custom IC Web App. These deployments are managed and configured through a `kustomization.yaml` file that organizes and references all required Kubernetes manifests.
+
+### **Overview of the Deployment**
+
+The deployment leverages Kubernetes resources, including namespaces, secrets, ConfigMaps, services, and deployments, to ensure the proper functioning of all applications. The applications and their dependencies are organized into logical directories, each containing relevant manifests.
+
+### **Kustomization File**
+
+The `kustomization.yaml` file consolidates all manifests to facilitate easier management and deployment. Below is the list of resources included in the file:
+
+```yaml
+resources:
+  - ic-group-namespace.yaml
+  - ./postgres/postgres-secret.yaml
+  - ./odoo/odoo-secret.yaml
+  - ./pgadmin/pgadmin-secret.yaml
+  - ./pgadmin/pgadmin-configmap.yaml
+  - ./postgres/postgres-clusterip.yaml
+  - ./ic-webapp/ic-webapp-nodeport.yaml
+  - ./odoo/odoo-nodeport.yaml
+  - ./pgadmin/pgadmin-nodeport.yaml
+  - ./postgres/postgres-deploy.yaml
+  - ./pgadmin/pgadmin-deploy.yaml
+  - ./odoo/odoo-deploy.yaml
+  - ./ic-webapp/ic-webapp-deploy.yaml
