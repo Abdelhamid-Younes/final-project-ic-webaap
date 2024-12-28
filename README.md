@@ -29,7 +29,7 @@ This part outlines the steps to containerize the web application using Docker.
 - The Docker image is based on `python:3.6-alpine`.
 - The working directory is set to `/opt`.
 -  Install the Flask module, version `1.1.2`.
-- Expose the port `8080` as the default application port.
+- Expose the port `8000` as the default application port.
 - Create two environment variables: `ODOO_URL`: to define the URLs of the Odoo and `PGADMIN_URL` applications.
 - Launch the application by running `app.py` using the command `python` in the `ENTRYPOINT`.
 - Create a `Dockerfile` with the above configurations.
@@ -41,7 +41,7 @@ This part outlines the steps to containerize the web application using Docker.
 - Launch a test container to verify the functionality:
 
   ```bash
-  $ docker run --name ic-webapp-test -d -p 8080:8080 ic-webapp:1.0
+  $ docker run --name ic-webapp-test -d -p 8000:8000 ic-webapp:1.0
 
 - Once the test is successful, remove the test container:
 
