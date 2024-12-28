@@ -653,9 +653,9 @@ spec:
         name: ic-webapp-ctnr
         env:
         - name: ODOO_URL
-          value: http://192.168.56.10:30200
+          value: http://192.168.99.11:30200
         - name: PGADMIN_URL
-          value: http://192.168.56.10:30300
+          value: http://192.168.99.11:30300
         ports:
         - containerPort: 8080
 ```
