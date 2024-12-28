@@ -651,4 +651,6 @@ kubectl get all -n ic-group
 
 Access the deployed applications using their respective NodePort services, which expose the applications to the external network.
 
+ 
+
 
