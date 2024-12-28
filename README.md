@@ -53,7 +53,7 @@ This part outlines the steps to containerize the web application using Docker.
   $ docker tag ic-webapp:1.0 younesabdh/ic-webapp:1.0
   $ docker push younesabdh/ic-webapp:1.0
 
-Here is the dresult of the test:
+Here is the result of the test:
 
 ![](images/test-ic-webapp.png)
 
