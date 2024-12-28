@@ -19,9 +19,52 @@ The applications involved are:
 
 This project also demonstrates the integration of various tools and technologies to achieve automation, scalability, and efficient application deployment.
 
-# Table of Contents  
+# Table of Contents
 
-[**Project overview**](#Project overview)
+- [Project Overview](#project-overview)
+- [PART 1: Web Application Containerization](#part-1-web-application-containerization)
+  - [Docker Image Configuration](#docker-image-configuration)
+  - [Building and Testing the Docker Image](#building-and-testing-the-docker-image)
+  - [Pushing the Docker Image to Docker Hub](#pushing-the-docker-image-to-docker-hub)
+- [PART 2: CI/CD Pipeline Setup with Jenkins, Terraform, and Ansible](#part-2-cicd-pipeline-setup-with-jenkins-terraform-and-ansible)
+  - [1. Setting Up the AWS Infrastructure Using Terraform](#1-setting-up-the-aws-infrastructure-using-terraform)
+    - [Infrastructure Overview](#infrastructure-overview)
+    - [Terraform Project Directory Structure](#terraform-project-directory-structure)
+    - [Essential Terraform Files and Their Roles](#essential-terraform-files-and-their-roles)
+    - [Key Variables](#key-variables)
+    - [Outputs](#outputs)
+  - [2. Ansible Roles to Deploy Applications](#2-ansible-roles-to-deploy-applications)
+    - [Tree Structure Overview](#tree-structure-overview)
+    - [Key Files](#key-files)
+      - [`ansible.cfg`](#ansiblecfg)
+      - [Inventory Files](#inventory-files)
+        - [`hosts.yml`](#hostsyml)
+        - [`group_vars` and `host_vars`](#group_vars-and-host_vars)
+      - [Roles Directory](#roles-directory)
+        - [Key Roles](#key-roles)
+      - [Playbooks](#playbooks)
+        - [Running the Playbooks](#running-the-playbooks)
+  - [3. CI/CD Pipeline with Jenkins](#3-cicd-pipeline-with-jenkins)
+    - [Installing Necessary Plugins](#installing-necessary-plugins)
+    - [Creating Credentials](#creating-credentials)
+    - [Creating the Pipeline](#creating-the-pipeline)
+      - [Configuring the Pipeline from SCM](#configuring-the-pipeline-from-scm)
+    - [Slack Integration for Jenkins Notifications](#slack-integration-for-jenkins-notifications)
+- [PART 3: Deployment of Different Applications in a Kubernetes Cluster](#part-3-deployment-of-different-applications-in-a-kubernetes-cluster)
+  - [Overview of the Deployment](#overview-of-the-deployment)
+  - [Kustomization File](#kustomization-file)
+  - [Namespace](#namespace)
+  - [Deployments](#deployments)
+    - [1. PostgreSQL](#1-postgresql)
+    - [2. pgAdmin](#2-pgadmin)
+    - [3. Odoo](#3-odoo)
+    - [4. Ic-Webapp](#4-ic-webapp)
+  - [Deployment Steps](#deployment-steps)
+    - [Apply the Manifests](#apply-the-manifests)
+    - [Verify the Deployment](#verify-the-deployment)
+    - [Access the Applications](#access-the-applications)
+  - [Conclusion](#conclusion)
+
 
 ## PART 1: Web Application Containerization
 
