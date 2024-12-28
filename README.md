@@ -641,16 +641,38 @@ spec:
 
 4. **Verify the Deployment**:
 
-To ensure that all resources have been deployed correctly, run the following command to list the resources in the `ic-group` namespace:
+To ensure that all resources have been deployed correctly, run the following command to list the resources in the `icgroup` namespace:
 
 ```bash
-kubectl get all -n ic-group
-``` 
+kubectl get all -n icgroup
+```
+
+![](images/icgroup_resources.png)
+
 
 4. **Access the applications**: 
 
 Access the deployed applications using their respective NodePort services, which expose the applications to the external network.
 
- 
+- ic-webapp:
 
+![](images/icwebapp_pod.png)
+
+- Odoo:
+
+![](images/odoo_pod.png)
+
+![](images/odoo_demo.png)
+
+- Pgadmin:
+
+![](images/pgadmin_pod.png)
+ 
+![](images/pgadmin_demo.png)
+
+## **Conclusion**
+
+The **IC-Group Project** has been an invaluable learning experience, allowing me to apply the DevOps concepts and tools studied during this BootCamp in a practical and cohesive way. Through this project, I successfully implemented a fully functional CI/CD pipeline, integrating the essential modules as **Docker, Jenkins, Terraform, Ansible, and Kubernetes**. This achievement highlights my ability to design, automate, and manage modern infrastructure while reinforcing the theoretical foundations acquired throughout the course. It serves as a solid demonstration of my readiness to tackle complex DevOps challenges in professional environments.
+
+Thank you for exploring this project, feel free to reach out with any feedback or questions to further enhance its implementation and functionality!
 
