@@ -55,7 +55,7 @@ This part outlines the steps to containerize the web application using Docker.
 
 Here is the result of the test:
 
-![](images/test-ic-webapp.png)
+![](images/test_ic-webapp.png)
 
 And the push in dockerhub:
 
