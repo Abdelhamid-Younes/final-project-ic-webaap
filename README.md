@@ -2,7 +2,7 @@
 
 ![](images/CI_CD_Pipeline.png)
 
-## Project overview
+## Project overview:
 
 The **Devops Final Project** is the final project as part of the DevOps training program at [Eazytraining](https://eazytraining.fr/) school. Its goal is to provide both a practical and theoretical demonstration of the technical skills acquired during the DevOps Bootcamp, including **Docker**, **GitLab-CI**, **Jenkins**, **Terraform**, **Ansible**, and **Kubernetes**.
 
